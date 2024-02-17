@@ -1,0 +1,19 @@
+﻿@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using RentCar
+@using RentCar.Shared
+@using RentCar.Data.Services
+
+@inject IUserServices userServices;
+@inject IVehicleServices vehicleServices;
+@inject ICustomerServices customerServices;
+@inject IEmployeeServices employeeServices;
+@inject IRentalInvoiceServices rentalInvoiceServices;
+
+@inject NavigationManager NavigationManager

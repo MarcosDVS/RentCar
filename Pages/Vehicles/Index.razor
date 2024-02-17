@@ -1,0 +1,184 @@
+﻿@page "/vehiculos"
+
+<div class="container mt-5">
+    <h2 class="text-center">Listdo de Vehículos</h2>
+    <hr>
+    @if (!ShowForm)
+    {
+        <div class="text-left mb-3">
+            <button class="btn btn-success" @onclick="MostrarFormulario">
+                <span class="oi oi-plus"></span>
+                Nuevo Vehículo
+            </button>
+        </div>
+    }
+
+    @if (ShowForm)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@TituloForm</h3>
+            </div>
+            <div class="card-body">
+                <EditForm Model="request" OnValidSubmit="Send">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca</label>
+                        <InputText id="marca" class="form-control" @bind-Value="@request.Make" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <InputText id="modelo" class="form-control" @bind-Value="@request.Model" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="placa" class="form-label">Placa</label>
+                        <InputText id="placa" class="form-control" @bind-Value="@request.PlateNumber" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="año" class="form-label">Año</label>
+                        <InputNumber id="año" class="form-control" @bind-Value="@request.Year" required />
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-outline-success">Guardar</button>
+                        <button type="button" class="btn btn-outline-danger" @onclick="Cancelar">Cancelar</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row ">
+            @foreach (var vehicle in Vehicles)
+            {
+                <div class="col-3 mt-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><b>@vehicle.Make @vehicle.Model</b></h5>
+                            <p class="card-text"><b>Placa:</b> @vehicle.PlateNumber</p>
+                            <p class="card-text"><b>Año:</b> @vehicle.Year</p>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button class="btn btn-warning" @onclick="()=>Seleccionar(vehicle.Id)">Editar</button>
+                            <button class="btn btn-danger" @onclick="()=>Eliminar(vehicle)">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    public string TituloForm => request.Id == 0 ?
+    "Agregar vehiculo" : "Modificar vehiculo";
+
+    public bool ShowForm { get; set; } = false;
+    public bool ShowDetails { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    public List<VehicleResponse> Vehicles { get; set; }
+        = new List<VehicleResponse>();
+    public VehicleResponse SelectedVehicle { get; set; }
+
+    public VehicleRequest request { get; set; } = new VehicleRequest();
+
+    void MostrarFormulario()
+    {
+        ShowForm = true;
+        request = new VehicleRequest();
+    }
+    void Cancelar()
+    {
+        request = new VehicleRequest();
+        ShowForm = false;
+    }
+    async Task CargarVehiculos()
+    {
+        var resultado =
+        await vehicleServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Vehicles = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarVehiculos();
+    }
+
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await vehicleServices.Crear(request);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarVehiculos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await vehicleServices.Modificar(request);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarVehiculos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Vehicles
+        .Where(c => c.Id == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new VehicleRequest();
+    }
+
+    public async Task Eliminar(VehicleResponse vehicle)
+    {
+        var resultado = await vehicleServices.Eliminar(vehicle.ToRequest());
+        if (resultado.Success)
+        {
+            await CargarVehiculos();
+            StateHasChanged();
+        }
+    }
+
+    void Close()
+    {
+        ShowDetails = false;
+    }
+    public async Task MostrarDetalles(int vehicleId)
+    {
+        ShowForm = false;
+        ShowDetails = true;
+        SelectedVehicle = Vehicles.FirstOrDefault(v => v.Id == vehicleId);
+    }
+    public void Editar(VehicleResponse vehicle)
+    {
+        ShowForm = true;
+        ShowDetails = false;
+        request = new VehicleRequest
+            {
+                Id = vehicle.Id,
+                Make = vehicle.Make,
+                Model = vehicle.Model,
+                PlateNumber = vehicle.PlateNumber,
+                Year = vehicle.Year,
+            };
+    }
+}

@@ -1,0 +1,148 @@
+﻿@page "/"
+@using RentCar.Data.Models
+
+<PageTitle>RentCar</PageTitle>
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+    }
+
+    .login-form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .login-form h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .btn-secondary {
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .btn-secondary:hover {
+        background-color: #c0392b;
+    }
+
+    p {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    a {
+        color: #3498db;
+        cursor: pointer;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .welcome-message {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-form">
+        @if (!isLoggedIn)
+        {
+            <form>
+                <h2>Iniciar sesión</h2>
+                <div class="form-group">
+                    <label for="username">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="username" @bind="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password" @bind="password" required>
+                </div>
+                <button type="button" class="btn btn-primary" @onclick="Login">Iniciar sesión</button>
+                <p>
+                    ¿Aún no tienes una cuenta? <a href="#" @onclick="CrearUsuario">Crear Usuario</a>
+                </p>
+            </form>
+        }
+        else
+        {
+            <p class="welcome-message">¡Bienvenido, @currentUser.Name!</p>
+            <!-- Aquí puedes mostrar el resto de opciones del menú -->
+        }
+    </div>
+</div>
+
+@code {
+    private string username;
+    private string password;
+    private bool isLoggedIn = false;
+    private User currentUser;
+
+    private async Task Login()
+    {
+        var result = await userServices.Login(username, password);
+        if (result.Success)
+        {
+            isLoggedIn = true;
+            currentUser = result.Data;
+            // Almacenar la información del usuario en el almacenamiento local si lo deseas
+            NavigationManager.NavigateTo("/rentalInvoices"); // Redirigir al usuario a la página principal después del inicio de sesión exitoso
+        }
+        else
+        {
+            // Mostrar un mensaje de error en caso de credenciales incorrectas
+            // Puedes mostrar el mensaje en la página o utilizar una biblioteca de notificaciones como Blazored.Toast
+        }
+    }
+
+    void CrearUsuario()
+    {
+        NavigationManager.NavigateTo("/createUser");
+    }
+}

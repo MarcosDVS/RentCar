@@ -1,0 +1,182 @@
+﻿@page "/employee"
+@inject IEmployeeServices employeeService
+@inject IJSRuntime JS
+
+<div class="container mt-5">
+    <h2 class="text-center">Listado de Empleados</h2>
+    <hr>
+    <div class="text-left mb-3">
+        <button class="btn btn-success" @onclick="MostrarFormulario">
+            <span class="oi oi-plus"></span>
+            Nuevo Empleado
+        </button>
+    </div>
+
+    @if (ShowForm)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@TituloForm</h3>
+            </div>
+            <div class="card-body">
+                <EditForm Model="request" OnValidSubmit="Send">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <InputText id="nombre" class="form-control" @bind-Value="@request.Name" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="posicion" class="form-label">Posición</label>
+                        <InputText id="posicion" class="form-control" @bind-Value="@request.Position" required />
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-outline-success">Guardar</button>
+                        <button type="button" class="btn btn-outline-danger ms-2" @onclick="Cancelar">Cancelar</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <br />
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var employee in Employees)
+            {
+                <div class="col-4 mt-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><b>@employee.Name</b></h5>
+                            <p class="card-text"><b>Posición:</b> @employee.Position</p>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button class="btn btn-warning" @onclick="()=>Editar(employee)">Editar</button>
+                            <button class="btn btn-danger" @onclick="()=>Eliminar(employee)">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    public string TituloForm => request.Id == 0 ? "Agregar empleado" : "Modificar empleado";
+
+    public bool ShowForm { get; set; } = false;
+    public bool ShowDetails { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    public List<EmployeeResponse> Employees { get; set; } = new List<EmployeeResponse>();
+    public EmployeeResponse SelectedEmployee { get; set; }
+
+    public EmployeeRequest request = new EmployeeRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarEmployees();
+    }
+
+    public async Task CargarEmployees()
+    {
+        var resultado = await employeeService.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Employees = resultado.Data;
+        }
+        else
+        {
+            // Manejar el error, mostrar mensaje o realizar alguna acción
+        }
+    }
+
+    public async Task Send()
+    {
+        if (request.Id == 0)
+        {
+            var resultado = await employeeService.Crear(request);
+            if (resultado.Success)
+            {
+                await CargarEmployees();
+                ShowForm = false;
+            }
+            else
+            {
+                // Manejar el error, mostrar mensaje o realizar alguna acción
+            }
+        }
+        else
+        {
+            var resultado = await employeeService.Modificar(request);
+            if (resultado.Success)
+            {
+                await CargarEmployees();
+                ShowForm = false;
+            }
+            else
+            {
+                // Manejar el error, mostrar mensaje o realizar alguna acción
+            }
+        }
+    }
+
+    public void Cancelar()
+    {
+        ShowForm = false;
+        ShowDetails = false;
+        request = new EmployeeRequest();
+    }
+
+    public void MostrarFormulario()
+    {
+        ShowForm = true;
+        ShowDetails = false;
+        request = new EmployeeRequest();
+    }
+
+    void Close()
+    {
+        ShowDetails = false;
+    }
+    public async Task MostrarDetalles(int employeeId)
+    {
+        ShowForm = false;
+        ShowDetails = true;
+        SelectedEmployee = Employees.FirstOrDefault(e => e.Id == employeeId);
+    }
+
+    public void Editar(EmployeeResponse employee)
+    {
+        ShowForm = true;
+        ShowDetails = false;
+        request = new EmployeeRequest
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Position = employee.Position
+            };
+    }
+
+    public async Task Eliminar(EmployeeResponse employee)
+    {
+        var confirmacion = await JS.InvokeAsync<bool>("confirm", "¿Está seguro de eliminar el empleado?");
+        if (confirmacion)
+        {
+            var resultado = await employeeService.Eliminar(new EmployeeRequest { Id = employee.Id });
+            if (resultado.Success)
+            {
+                await CargarEmployees();
+                ShowForm = false;
+                ShowDetails = false;
+                request = new EmployeeRequest();
+            }
+            else
+            {
+                // Manejar el error, mostrar mensaje o realizar alguna acción
+            }
+        }
+    }
+}
