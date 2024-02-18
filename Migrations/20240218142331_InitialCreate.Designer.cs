@@ -12,7 +12,7 @@ using RentCar.Data.Context;
 namespace RentCar.Migrations
 {
     [DbContext(typeof(RentCarDbContext))]
-    [Migration("20230616213610_InitialCreate")]
+    [Migration("20240218142331_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

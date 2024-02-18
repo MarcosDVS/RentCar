@@ -124,6 +124,12 @@
     private bool isLoggedIn = false;
     private User currentUser;
 
+    protected override async Task OnInitializedAsync()
+    {
+        // Llamada a CrearUsuarioAdmin antes de intentar autenticar
+        await userServices.CreatUser();
+        // Resto de tu código OnInitializedAsync
+    }
     private async Task Login()
     {
         var result = await userServices.Login(username, password);
@@ -132,7 +138,7 @@
             isLoggedIn = true;
             currentUser = result.Data;
             // Almacenar la información del usuario en el almacenamiento local si lo deseas
-            NavigationManager.NavigateTo("/rentalInvoices"); // Redirigir al usuario a la página principal después del inicio de sesión exitoso
+            NavigationManager.NavigateTo("/main"); // Redirigir al usuario a la página principal después del inicio de sesión exitoso
         }
         else
         {

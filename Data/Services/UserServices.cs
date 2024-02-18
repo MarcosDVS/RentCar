@@ -6,134 +6,151 @@ using RentCar.Data.Request;
 using RentCar.Data.Response;
 using System.Diagnostics.Contracts;
 
-namespace RentCar.Data.Services
+namespace RentCar.Data.Services;
+
+public class UserServices : IUserServices
 {
-    public class UserServices : IUserServices
+    private readonly IRentCarDbContext dbContext;
+
+    public UserServices(IRentCarDbContext dbContext)
     {
-        private readonly IRentCarDbContext dbContext;
+        this.dbContext = dbContext;
+    }
 
-        public UserServices(IRentCarDbContext dbContext)
+    public async Task<Result> Crear(UserRequest request)
+    {
+        try
         {
-            this.dbContext = dbContext;
+            var contacto = User.Crear(request);
+            dbContext.Users.Add(contacto);
+            await dbContext.SaveChangesAsync();
+            return new Result() { Message = "Ok", Success = true };
         }
-
-        public async Task<Result> Crear(UserRequest request)
+        catch (Exception E)
         {
-            try
-            {
-                var contacto = User.Crear(request);
-                dbContext.Users.Add(contacto);
+
+            return new Result() { Message = E.Message, Success = false };
+        }
+    }
+    public async Task<Result> Modificar(UserRequest request)
+    {
+        try
+        {
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(c => c.Id == request.Id);
+            if (user == null)
+                return new Result() { Message = "No se encontro el usuario", Success = false };
+
+            if (user.Modificar(request))
                 await dbContext.SaveChangesAsync();
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
 
-                return new Result() { Message = E.Message, Success = false };
-            }
+            return new Result() { Message = "Ok", Success = true };
         }
-        public async Task<Result> Modificar(UserRequest request)
+        catch (Exception E)
         {
-            try
-            {
-                var user = await dbContext.Users
-                    .FirstOrDefaultAsync(c => c.Id == request.Id);
-                if (user == null)
-                    return new Result() { Message = "No se encontro el usuario", Success = false };
 
-                if (user.Modificar(request))
-                    await dbContext.SaveChangesAsync();
-
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
-
-                return new Result() { Message = E.Message, Success = false };
-            }
+            return new Result() { Message = E.Message, Success = false };
         }
-        public async Task<Result> Eliminar(UserRequest request)
+    }
+    public async Task<Result> Eliminar(UserRequest request)
+    {
+        try
         {
-            try
-            {
-                var contacto = await dbContext.Users
-                    .FirstOrDefaultAsync(c => c.Id == request.Id);
-                if (contacto == null)
-                    return new Result() { Message = "No se encontro el usuario", Success = false };
+            var contacto = await dbContext.Users
+                .FirstOrDefaultAsync(c => c.Id == request.Id);
+            if (contacto == null)
+                return new Result() { Message = "No se encontro el usuario", Success = false };
 
-                dbContext.Users.Remove(contacto);
-                await dbContext.SaveChangesAsync();
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
-
-                return new Result() { Message = E.Message, Success = false };
-            }
+            dbContext.Users.Remove(contacto);
+            await dbContext.SaveChangesAsync();
+            return new Result() { Message = "Ok", Success = true };
         }
-        public async Task<Result<List<UserResponse>>> Consultar(string filtro)
+        catch (Exception E)
         {
-            try
-            {
-                var usuarios = await dbContext.Users
-                    .Where(u =>
-                        (u.Name + " " + u.Username + " " + u.Password)
-                        .ToLower()
-                        .Contains(filtro.ToLower()
-                        )
+
+            return new Result() { Message = E.Message, Success = false };
+        }
+    }
+    public async Task<Result<List<UserResponse>>> Consultar(string filtro)
+    {
+        try
+        {
+            var usuarios = await dbContext.Users
+                .Where(u =>
+                    (u.Name + " " + u.Username + " " + u.Password)
+                    .ToLower()
+                    .Contains(filtro.ToLower()
                     )
-                    .Select(u => u.ToResponse())
-                    .ToListAsync();
-                return new Result<List<UserResponse>>()
-                {
-                    Message = "Ok",
-                    Success = true,
-                    Data = usuarios
-                };
-            }
-            catch (Exception E)
+                )
+                .Select(u => u.ToResponse())
+                .ToListAsync();
+            return new Result<List<UserResponse>>()
             {
-                return new Result<List<UserResponse>>
-                {
-                    Message = E.Message,
-                    Success = false
-                };
-            }
+                Message = "Ok",
+                Success = true,
+                Data = usuarios
+            };
         }
-        public async Task<Result<User>> Login(string username, string password)
+        catch (Exception E)
         {
-            try
+            return new Result<List<UserResponse>>
             {
-                var user = await dbContext.Users
-                    .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+                Message = E.Message,
+                Success = false
+            };
+        }
+    }
+    public async Task<Result<User>> Login(string username, string password)
+    {
+        try
+        {
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
 
-                if (user != null)
+            if (user != null)
+            {
+                return new Result<User>
                 {
-                    return new Result<User>
-                    {
-                        Success = true,
-                        Data = user,
-                        Message = "Inicio de sesión exitoso"
-                    };
-                }
-                else
-                {
-                    return new Result<User>
-                    {
-                        Success = false,
-                        Message = "Credenciales de inicio de sesión incorrectas"
-                    };
-                }
+                    Success = true,
+                    Data = user,
+                    Message = "Inicio de sesión exitoso"
+                };
             }
-            catch (Exception ex)
+            else
             {
                 return new Result<User>
                 {
                     Success = false,
-                    Message = $"Error en el inicio de sesión: {ex.Message}"
+                    Message = "Credenciales de inicio de sesión incorrectas"
                 };
             }
         }
+        catch (Exception ex)
+        {
+            return new Result<User>
+            {
+                Success = false,
+                Message = $"Error en el inicio de sesión: {ex.Message}"
+            };
+        }
+    }
 
+    public async Task CreatUser()
+    {
+        var adminUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == "admin");
+
+        if (adminUser == null)
+        {
+            adminUser = new User
+            {
+                Name = "ADMIN",
+                Username = "admin",
+                Password = "1234", // Recuerda realizar un hash de la contraseña en un entorno de producción
+            };
+
+            dbContext.Users.Add(adminUser);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
+

@@ -11,5 +11,6 @@ namespace RentCar.Data.Services
         Task<Result> Eliminar(UserRequest request);
         Task<Result<User>> Login(string username, string password);
         Task<Result> Modificar(UserRequest request);
+        Task CreatUser();
     }
 }
