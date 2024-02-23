@@ -1,5 +1,5 @@
 ﻿@page "/usuarios"
-
+@attribute [Authorize]
 
 <div class="container mt-5">
     <h2 class="text-center">Listado de Usuarios</h2>
@@ -53,16 +53,23 @@
         <div class="row">
             @foreach (var row in Users)
             {
-                <div class="col-4 mt-2">
+                <div class="col-4 mt-2 text-center">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title"><b>@row.Name</b></h5>
+                            <div class="row">
+                                <span class="oi oi-person"></span>
+                                <h5 class="card-title"><b>@row.Name</b></h5>
+                            </div>
                             <p class="card-text"><b>Email:</b> @row.Username</p>
                             <p class="card-text"><b>Password:</b> @row.Password</p>
                         </div>
                         <div class="card-footer text-end">
-                            <button class="btn btn-warning" @onclick="()=>Editar(row)">Editar</button>
-                            <button class="btn btn-danger" @onclick="()=>Eliminar(row)">Eliminar</button>
+                            <button class="btn btn-warning" @onclick="()=>Editar(row)">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button class="btn btn-danger" @onclick="()=>Eliminar(row)">
+                                <span class="oi oi-trash"></span>
+                            </button>
                         </div>
                     </div>
                 </div>

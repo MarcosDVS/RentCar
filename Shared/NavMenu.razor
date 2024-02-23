@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using RentCar.Authentication;
+@inject AuthenticationStateProvider authStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">¡RentCar El Caribe!</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -82,10 +85,21 @@
                 <span aria-hidden="true"></span> Rentar Carro
             </NavLink>
         </div>*@
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="Logout">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Log Out
+            </NavLink>
+        </div>
     </Nav>
 </div>  
 
 @code {
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        urlHelper.NavigateTo("/", true);
+    }
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

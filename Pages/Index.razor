@@ -1,5 +1,7 @@
 ﻿@page "/"
-@using RentCar.Data.Models
+@using RentCar.Authentication;
+@inject IUserAccountService userAccountService
+@inject AuthenticationStateProvider authStateProvider
 
 <PageTitle>RentCar</PageTitle>
 
@@ -9,7 +11,6 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background-color: #f4f4f4;
     }
 
     .login-form {
@@ -34,7 +35,9 @@
         font-size: 14px;
         color: #555;
     }
-
+    body {
+        background-color: #f4f4f4;
+    }
     .form-control {
         width: 100%;
         padding: 8px;
@@ -92,59 +95,68 @@
 
 <div class="login-container">
     <div class="login-form">
-        @if (!isLoggedIn)
-        {
-            <form>
-                <h2>Iniciar sesión</h2>
-                <div class="form-group">
-                    <label for="username">Nombre de usuario</label>
-                    <input type="text" class="form-control" id="username" @bind="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" class="form-control" id="password" @bind="password" required>
-                </div>
-                <button type="button" class="btn btn-primary" @onclick="Login">Iniciar sesión</button>
-                <p>
-                    ¿Aún no tienes una cuenta? <a href="#" @onclick="CrearUsuario">Crear Usuario</a>
-                </p>
-            </form>
-        }
-        else
-        {
-            <p class="welcome-message">¡Bienvenido, @currentUser.Name!</p>
-            <!-- Aquí puedes mostrar el resto de opciones del menú -->
-        }
+        <form>
+            <h2>Iniciar sesión</h2>
+            <div class="form-group">
+                <label for="username">Nombre de usuario</label>
+                <input type="text" class="form-control" id="username" @bind="model.UserName" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" class="form-control" id="password" @bind="model.Password" required>
+            </div>
+            <button type="button" class="btn btn-primary" @onclick="Authenticate">Iniciar sesión</button>
+            <p>
+                ¿Aún no tienes una cuenta? <a href="#" @onclick="CrearUsuario">Crear Usuario</a>
+            </p>
+        </form>
     </div>
 </div>
 
 @code {
-    private string username;
-    private string password;
-    private bool isLoggedIn = false;
-    private User currentUser;
+    private string mensajeError = "";
+    private LoginModel model = new LoginModel();
+
+    private class LoginModel
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    private async Task Authenticate()
+    {
+        if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
+        {
+            mensajeError = "Complete Los Campos Patrón 😒";
+            
+        }
+        else
+        {
+            var userAccount = userAccountService.GetByUserName(model.UserName);
+            if(userAccount == null || userAccount.Password != model.Password)
+            {
+                mensajeError = "Las Credenciales Son Incorrectas ❌";
+                return;
+            }
+
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserName = userAccount.Username,
+                    Name = userAccount.Name
+                    //Role = userAccount.Role
+                });
+                mensajeError = null;
+            urlHelper.NavigateTo("/main", true);
+        }
+        
+    }
 
     protected override async Task OnInitializedAsync()
     {
         // Llamada a CrearUsuarioAdmin antes de intentar autenticar
         await userServices.CreatUser();
         // Resto de tu código OnInitializedAsync
-    }
-    private async Task Login()
-    {
-        var result = await userServices.Login(username, password);
-        if (result.Success)
-        {
-            isLoggedIn = true;
-            currentUser = result.Data;
-            // Almacenar la información del usuario en el almacenamiento local si lo deseas
-            NavigationManager.NavigateTo("/main"); // Redirigir al usuario a la página principal después del inicio de sesión exitoso
-        }
-        else
-        {
-            // Mostrar un mensaje de error en caso de credenciales incorrectas
-            // Puedes mostrar el mensaje en la página o utilizar una biblioteca de notificaciones como Blazored.Toast
-        }
     }
 
     void CrearUsuario()
