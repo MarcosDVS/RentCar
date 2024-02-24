@@ -14,8 +14,21 @@
 <div class="container-fluid mt-5">
     @if (ShowForm)
     {
-        <h3>@TituloForm</h3>
+        <div class="row">
+            <div class="col">
+                <h3><strong>@TituloForm</strong></h3>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-outline-warning d-print-none" @onclick="UpdatePage">
+                    <span class="oi oi-loop"></span>
+                </button>
+                <button @onclick="Cancelar" class="btn btn-outline-danger">
+                    <span class="oi oi-arrow-thick-left"></span>
+                </button>
+            </div>
+        </div>
         <hr>
+
         <EditForm Model="request" OnValidSubmit="Send">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -38,7 +51,7 @@
                     <div class="mb-2 input-group">
                         <input class="form-control" placeholder="Vehiculo" aria-label="Vehiculo" 
                         aria-describedby="button-addon2" list="vehicles" 
-                        @bind="Vehicle" 
+                        @bind="CarName" 
                         @oninput="HandleVehicleSelection" required/>
                         <datalist id="vehicles">
                             @foreach (var vehiculo in Vehicles)
@@ -63,18 +76,55 @@
                         <InputDate class="form-control" @bind-Value="@request.ReturnDate"></InputDate>
                     </div>
                     
-                    <div class="mb-2 input-group">
-                        <label class="input-group-text">Total</label>
-                        <input class="form-control" @bind="@request.TotalAmount" readonly></input>
-                    </div>
+                    @if (Message != null)
+                    {
+                        <div class="alert-warning">
+                            <span class="text-dark">@Message</span>
+                        </div>
+                    }
 
                 </div>
-                <div class="card-footer">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
-                        <button type="submit" class="btn btn-success me-md-2">Guardar</button>
-                        <button type="button" class="btn btn-primary me-md-2" @onclick="CalculateTotalAmount">Calcular</button>
-                        <button @onclick="Cancelar" class="btn btn-danger">Cancelar</button>
+            </div>
+
+            <div class="card mt-2">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5><strong>Resumen:</strong></h5>
+                        </div>
+                        <div class="col text-end">
+                            <div class="input-group d-print-none">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-white text-black border-0">
+                                        <span class="oi oi-dollar"></span>
+                                    </span>
+                                </div>
+                                <input type="number" placeholder="Monto Pagado" id="montoPagado" @bind="@MontoPagado" class="form-control rounded" />
+                                @if (!Paid)
+                                {
+                                    <button type="button" class="btn btn-outline-primary rounded" @onclick="CalculateTotalAmount">
+                                        Calcular
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-outline-success">Guardar</button>
+                                }
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="card-body text-center">
+                    
+
+                    <ul class="list-unstyled float-end me-0">
+                        <li><span class="me-3 float-start"><strong>Total Amount:</strong></span><i class="fas fa-dollar-sign"></i> @TotalPagar.ToString("N2")
+                        </li>
+                        <li> <span class="me-5"><strong>Discount:</strong></span><i class="fas fa-dollar-sign"></i> 0,00</li>
+                        <li><span class="float-start" style="margin-right: 35px;"><strong>Rented Days</strong> </span><i
+                            class="fas fa-dollar-sign"></i>@RentedDays</li>
+                    </ul>
+
                 </div>
             </div>
         </EditForm>
@@ -113,12 +163,18 @@
 </div>
 @code {
     public string TituloForm => request.Id == 0 ?
-    "Agregar Vehiculo Rentado" : "Modificar Vehiculo Rentado";
+    "RENTAR VEHICULO" : "MODIFICAR RENTA";
 
     public string Nombre { get; set; } = string.Empty;
-    public string Vehicle { get; set; } = string.Empty;
+    public string CarName { get; set; } = string.Empty;
+    public decimal MontoPagado { get; set; }
     public bool ShowForm { get; set; } = false;
+    public bool Paid { get; set; } = false;
     public string Filtro { get; set; } = "";
+    public string Message { get; set; } = "";
+    public decimal TotalPagar { get; set; } = 0;
+    public int RentedDays { get; set; } = 0;
+    
     public List<RentalInvoiceResponse> Invoices { get; set; }
         = new List<RentalInvoiceResponse>();
     public List<CustomerResponse> Customers { get; set; } = new();
@@ -148,15 +204,43 @@
     }
     void CalculateTotalAmount()
     {
+        if (string.IsNullOrEmpty(Nombre))
+        {
+            Message = "😒 Debes seleccionar un cliente. 🙍‍♂️";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(CarName))
+        {
+            Message = "😒 Debes seleccionar un vehiculo. 🛒";
+            return;
+        }
         DateTime startDate = request.RentalDate;
         DateTime endDate = request.ReturnDate;
         int totalDays = (int)(endDate - startDate).TotalDays;
         decimal totalAmount = totalDays * request.PriceDay;
-
+        
         request.TotalAmount = totalAmount;
+
+        TotalPagar = request.TotalAmount;
+        RentedDays = totalDays;
+
+        // Verificar si MontoPagado es menor que TotalPagar
+        if (MontoPagado < TotalPagar)
+        {
+            Message = "😒 El monto pagado es menor que el total a pagar. 💰";
+            return;
+        }
+
+        Message = null;
+        Paid = true;
     }
 
-
+    void Cancel()
+    {
+        ShowForm = true;
+        Paid = false;
+    }
     void Cancelar()
     {
         request = new RentalInvoiceRequest();
@@ -261,4 +345,16 @@
             StateHasChanged();
         }
     }
+
+    void UpdatePage()
+    {
+        // Limpiar los campos y reiniciar variables
+        request = new RentalInvoiceRequest();
+        TotalPagar = 0;
+        RentedDays = 0;
+
+        Paid = false;
+        Message = null;
+    }
+
 }
