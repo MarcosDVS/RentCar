@@ -3,8 +3,8 @@
 @inject IJSRuntime JS
 @attribute [Authorize]
 
-<div class="container mt-5">
-    <h2 class="text-center">Listado de Empleados</h2>
+<div class="container-fluid mt-5">
+    <h2 class="text-center"><strong>Listado de Empleados</strong></h2>
     <hr>
     <div class="text-left mb-3">
         <button class="btn btn-success" @onclick="MostrarFormulario">
@@ -45,18 +45,22 @@
     }
     else
     {
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             @foreach (var employee in Employees)
             {
-                <div class="col-4 mt-2">
+                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title"><b>@employee.Name</b></h5>
                             <p class="card-text"><b>Posición:</b> @employee.Position</p>
                         </div>
-                        <div class="card-footer text-end">
-                            <button class="btn btn-warning" @onclick="()=>Editar(employee)">Editar</button>
-                            <button class="btn btn-danger" @onclick="()=>Eliminar(employee)">Eliminar</button>
+                        <div class="card-footer">
+                            <button class="btn btn-warning" @onclick="()=>Editar(employee)">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button class="btn btn-danger" @onclick="()=>Eliminar(employee)">
+                                <span class="oi oi-trash"></span>
+                            </button>
                         </div>
                     </div>
                 </div>

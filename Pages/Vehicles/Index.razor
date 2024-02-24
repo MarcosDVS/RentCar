@@ -1,8 +1,8 @@
 ﻿@page "/vehiculos"
 @attribute [Authorize]
 
-<div class="container-fluid mt-5 ">
-    <h2 class="text-center">Listdo de Vehículos</h2>
+<div class="container-fluid mt-5">
+    <h2 class="text-center"><strong>Listdo de Vehículos</strong></h2>
     <hr>
     @if (!ShowForm)
     {
@@ -74,7 +74,7 @@
                             <small><strong>Placa:</strong> @vehicle.PlateNumber</small>
                             <small><strong>Color:</strong> Unknow</small>
                             <br>
-                            <button class="btn btn-warning" @onclick="()=>Seleccionar(vehicle.Id)">
+                            <button class="btn btn-warning" @onclick="()=>Editar(vehicle)">
                                 <span class="oi oi-pencil"></span>
                             </button>
                             <button class="btn btn-danger" @onclick="()=>Eliminar(vehicle)">
@@ -152,15 +152,20 @@
         }
     }
 
-    public void Seleccionar(int Id)
+    public void Editar(VehicleResponse item)
     {
         ShowForm = true;
-        request = Vehicles
-        .Where(c => c.Id == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new VehicleRequest();
-    }
+        ShowDetails = false;
+        request = new VehicleRequest
+            {
+                Id = item.Id,
+                Make = item.Make,
+                Model = item.Model,
+                Year = item.Year,
+                PlateNumber = item.PlateNumber
 
+            };
+    }
     public async Task Eliminar(VehicleResponse vehicle)
     {
         var resultado = await vehicleServices.Eliminar(vehicle.ToRequest());
@@ -180,18 +185,5 @@
         ShowForm = false;
         ShowDetails = true;
         SelectedVehicle = Vehicles.FirstOrDefault(v => v.Id == vehicleId);
-    }
-    public void Editar(VehicleResponse vehicle)
-    {
-        ShowForm = true;
-        ShowDetails = false;
-        request = new VehicleRequest
-            {
-                Id = vehicle.Id,
-                Make = vehicle.Make,
-                Model = vehicle.Model,
-                PlateNumber = vehicle.PlateNumber,
-                Year = vehicle.Year,
-            };
     }
 }

@@ -3,7 +3,7 @@
 
 @if (!ShowForm)
 {
-    <h3>Vehiculos Rentados (@Invoices.Count)</h3>
+    <h3><strong>Vehiculos Rentados (@Invoices.Count)</strong></h3>
     <div class="mb-2">
         <button class="btn btn-success"
             @onclick="()=>{ShowForm = !ShowForm;}">
@@ -11,7 +11,7 @@
         </button>
     </div>
 }
-<div class="container">
+<div class="container-fluid mt-5">
     @if (ShowForm)
     {
         <h3>@TituloForm</h3>
@@ -82,10 +82,10 @@
     }
     else
     {
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             @foreach (var invoice in Invoices)
             {
-                <div class="col mt-2">
+                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
                         <div class="card" style="width:18rem;">
                             <div class="card-body">
                                 <h5 class="card-title"><b>@invoice.NombreCustomerTexto</b></h5>
