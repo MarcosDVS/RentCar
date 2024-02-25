@@ -3,12 +3,19 @@
 
 @if (!ShowForm)
 {
-    <h3><strong>Vehiculos Rentados (@Invoices.Count)</strong></h3>
-    <div class="mb-2">
-        <button class="btn btn-success"
-            @onclick="()=>{ShowForm = !ShowForm;}">
-            Agregar
-        </button>
+    <div class="row">
+        <div class="col-lg-3 col-sm-12 mt-2">
+            <div class="text-left mb-3">
+                <button class="btn btn-outline-success" @onclick="()=>{ShowForm = !ShowForm; Message = null;}">
+                    <span class="oi oi-plus"></span>
+                    
+                </button>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-12 mt-2 text-center">
+            <h2 class="text-center"><strong>Vehiculos Rentados (@Invoices.Count)</strong></h2>
+        </div>
+        <hr>
     </div>
 }
 <div class="container-fluid mt-5">
@@ -56,7 +63,7 @@
                         <datalist id="vehicles">
                             @foreach (var vehiculo in Vehicles)
                             {
-                                <option value="@vehiculo.Make @vehiculo.Model @vehiculo.Year" />
+                                <option value="@($"{vehiculo.Make} {vehiculo.Model} {vehiculo.Year}")" />
                             }
                         </datalist>
                     </div>
@@ -94,11 +101,6 @@
                         </div>
                         <div class="col-5 text-end">
                             <div class="input-group d-print-none">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white text-black border-0">
-                                        <span class="oi oi-dollar"></span>
-                                    </span>
-                                </div>
                                 <input type="number" placeholder="Monto Pagado" id="montoPagado" @bind="@MontoPagado" class="form-control rounded" />
                                 @if (!Paid)
                                 {
@@ -142,19 +144,21 @@
                             <div class="card-body">
                                 <h5 class="card-title"><b>@invoice.NombreCustomerTexto</b></h5>
                                 <div class="card-text">
-                                    <label><b>Vehiculo:</b> @invoice.NombreVehicleTexto</label>
-                                    <label><b>Rented:</b> @invoice.RentalDate</label>
-                                    <label><b>Return:</b> @invoice.ReturnDate</label>
+                                    <small><b>Vehiculo:</b> @invoice.NombreVehicleTexto</small>
+                                    <br>
+                                    <small><b>Rented:</b> @invoice.RentalDate</small>
+                                    <br>
+                                    <small><b>Return:</b> @invoice.ReturnDate</small>
                                 </div>
                             </div>
                             <div class="card-footer text-end">
                                 <button @onclick="()=>Seleccionar(invoice.Id)"
-                                class="btn btn-warning">
-                                    Editar
+                                    class="btn btn-warning">
+                                    <span class="oi oi-pencil"></span>
                                 </button>
                                 <button @onclick="()=>Eliminar(invoice)"
-                                class="btn btn-danger">
-                                    Eliminar
+                                    class="btn btn-danger">
+                                    <span class="oi oi-trash"></span>
                                 </button>
                             </div>
                         </div>
@@ -196,14 +200,18 @@
     }
     void BuscarSeleccionarCar(string Car)
     {
-        var c = Vehicles.FirstOrDefault(p => p.Make == Car)!;
-        if (c != null) request.VehicleId = c.Id;
+        var c = Vehicles.FirstOrDefault(p => $"{p.Make} {p.Model} {p.Year}" == Car);
+        if (c != null) 
+        {
+            request.VehicleId = c.Id;
+        }
     }
     void HandleVehicleSelection(ChangeEventArgs args)
     {
         var selectedCar = args.Value.ToString();
         BuscarSeleccionarCar(selectedCar);
     }
+
     void CalculateTotalAmount()
     {
         if (string.IsNullOrEmpty(Nombre))
@@ -240,6 +248,8 @@
     {
         request = new RentalInvoiceRequest();
         ShowForm = false;
+        Paid = false;
+        MontoPagado = 0;
     }
     protected override async Task OnInitializedAsync()
     {
@@ -270,7 +280,7 @@
 
     async Task CargarFacturas()
     {
-        var resultado = await rentalInvoiceServices.Consultar();
+        var resultado = await rentalInvoiceServices.Consultar(Filtro);
         if (resultado.Success)
         {
             Invoices = resultado.Data!;
@@ -336,6 +346,16 @@
             request.RentalDate = selectedInvoice.RentalDate;
             request.ReturnDate = selectedInvoice.ReturnDate;
             // Asegúrate de que las propiedades del modelo request se asignen correctamente
+
+            DateTime startDate = request.RentalDate;
+            DateTime endDate = request.ReturnDate;
+            int totalDays = (int)(endDate - startDate).TotalDays;
+            decimal totalAmount = totalDays * request.PriceDay;
+
+            TotalPagar = totalAmount;
+            RentedDays = totalDays;
+
+            Message = null;
         }
     }
 

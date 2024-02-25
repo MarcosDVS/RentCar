@@ -77,7 +77,7 @@ public class UserServices : IUserServices
         {
             var usuarios = await dbContext.Users
                 .Where(u =>
-                    (u.Name + " " + u.Username + " " + u.Password)
+                    (u.Name + " " + u.Username + " " + u.Password + " " + u.Role)
                     .ToLower()
                     .Contains(filtro.ToLower()
                     )
@@ -145,7 +145,8 @@ public class UserServices : IUserServices
             {
                 Name = "ADMIN",
                 Username = "admin",
-                Password = "1234", // Recuerda realizar un hash de la contraseña en un entorno de producción
+                Password = "1234",
+                Role = "admin"
             };
 
             dbContext.Users.Add(adminUser);

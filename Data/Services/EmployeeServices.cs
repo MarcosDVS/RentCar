@@ -75,7 +75,7 @@ namespace RentCar.Data.Services
             {
                 var usuarios = await dbContext.Employees
                     .Where(e =>
-                        (e.Name + " " + e.Position)
+                        (e.Name + " " + e.Position + " " + e.Salary)
                         .ToLower()
                         .Contains(filtro.ToLower()
                         )

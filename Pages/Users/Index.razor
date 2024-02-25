@@ -2,7 +2,7 @@
 @attribute [Authorize]
 
 <div class="row">
-    <div class="col-lg-4 col-sm-12 mt-2">
+    <div class="col-lg-3 col-sm-12 mt-2">
         <div class="text-left mb-3">
             <button class="btn btn-outline-success" @onclick="MostrarFormulario">
                 <span class="oi oi-plus"></span>
@@ -10,7 +10,7 @@
             </button>
         </div>
     </div>
-    <div class="col-lg-4 col-sm-12 mt-2 text-center">
+    <div class="col-lg-6 col-sm-12 mt-2 text-center">
         <h2 class="text-center"><strong>Listado de Usuarios</strong></h2>
     </div>
     <hr>
@@ -49,7 +49,7 @@
                                     <span class="oi oi-envelope-closed"></span>
                                 </span>
                             </div>
-                            <input type="text" placeholder="Email" id="email" class="form-control" 
+                            <input type="email" placeholder="Email" id="email" class="form-control" 
                             @bind="@request.Username" required />
                         </div>
 
@@ -63,6 +63,18 @@
                             @bind="@request.Password" required />
                         </div>
 
+                        <div class="form-group input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white text-black border-0">
+                                    <span class="oi oi-badge"></span>
+                                </span>
+                            </div>
+                            <select name="" id="" @bind="@request.Role" class="form-control" required title="Debes seleccionar un role">
+                                <option value="" disabled selected>Elige un role</option>
+                                <option value="admin">Administrador</option>
+                                <option value="user">Usuario</option>
+                            </select>
+                        </div>
                         
                     </div>
 
@@ -93,8 +105,11 @@
                                 <b>@row.Name</b>
                             </h5>
                         </div>
-                        <p class="card-text"><b>Email:</b> @row.Username</p>
+                        <small class="card-text"><b>Email:</b> @row.Username</small>
+                        <br>
                         <small><strong>Password:</strong> @row.Password</small>
+                        <br>
+                        <small><strong>Role:</strong> @row.Role</small>
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-warning" @onclick="()=>Editar(row)">

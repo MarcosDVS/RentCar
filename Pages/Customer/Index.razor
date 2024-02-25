@@ -3,7 +3,7 @@
 @attribute [Authorize]
 
 <div class="row">
-    <div class="col-lg-4 col-sm-12 mt-2">
+    <div class="col-lg-3 col-sm-12 mt-2">
         <div class="text-left mb-3">
             <button class="btn btn-outline-success" @onclick="MostrarFormulario">
                 <span class="oi oi-plus"></span>
@@ -11,7 +11,7 @@
             </button>
         </div>
     </div>
-    <div class="col-lg-4 col-sm-12 mt-2 text-center">
+    <div class="col-lg-6 col-sm-12 mt-2 text-center">
         <h2 class="text-center"><strong>Listado de Clientes</strong></h2>
     </div>
     <hr>
@@ -51,7 +51,7 @@
                                     <span class="oi oi-phone"></span>
                                 </span>
                             </div>
-                            <input type="text" placeholder="Phone Number" id="nombre" class="form-control" 
+                            <input type="tel" placeholder="Phone Number" id="nombre" class="form-control" 
                             @bind="@request.PhoneNumber" required />
                         </div>
 
@@ -61,7 +61,7 @@
                                     <span class="oi oi-envelope-closed"></span>
                                 </span>
                             </div>
-                            <input type="text" placeholder="Email" id="email" class="form-control" 
+                            <input type="email" placeholder="Email" id="email" class="form-control" 
                             @bind="@request.Email" required />
                         </div>
                     </div>
@@ -90,8 +90,9 @@
                             <span class="oi oi-person"></span>
                             <b>@item.Name</b>
                         </h5>
-                        <p class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</p>
-                        <p class="card-text"><b>Email:</b> @item.Email</p>
+                        <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
+                        <br>
+                        <small class="card-text"><b>Email:</b> @item.Email</small>
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-warning" @onclick="()=>Editar(item)">

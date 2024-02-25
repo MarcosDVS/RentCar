@@ -9,6 +9,7 @@ namespace RentCar.Data.Response
         public string Name { get; set; } = null!;
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
+        public string Role { get; set; } = null!;
 
         public UserRequest ToRequest()
 		{
@@ -17,7 +18,8 @@ namespace RentCar.Data.Response
 				Id = Id,
 				Name = Name,
 				Username = Username,
-				Password = Password
+				Password = Password,
+				Role = Role
 			};
 		}
 	}

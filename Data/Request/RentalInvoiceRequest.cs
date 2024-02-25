@@ -14,6 +14,6 @@ namespace RentCar.Data.Request
         public DateTime ReturnDate { get; set; } = DateTime.Now.AddDays(+2);
         [Required(ErrorMessage = "Fijar un precio por día es obligatoria")]
         public decimal PriceDay { get; set; } = 1500; 
-        public decimal TotalAmount { get; set; } = 3000;
+        public decimal TotalAmount { get; set; }
     }
 }

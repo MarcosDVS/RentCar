@@ -57,7 +57,7 @@ namespace RentCar.Data.Services
                 var rentalInvoice = await dbContext.Invoices
                     .FirstOrDefaultAsync(r => r.Id == request.Id);
                 if (rentalInvoice == null)
-                    return new Result() { Message = "No se encontro el usuario", Success = false };
+                    return new Result() { Message = "No se encontro la factura", Success = false };
 
                 dbContext.Invoices.Remove(rentalInvoice);
                 await dbContext.SaveChangesAsync();
@@ -69,16 +69,18 @@ namespace RentCar.Data.Services
                 return new Result() { Message = E.Message, Success = false };
             }
         }
-        public async Task<Result<List<RentalInvoiceResponse>>> Consultar()
+        public async Task<Result<List<RentalInvoiceResponse>>> Consultar(string filtro)
         {
             try
             {
                 var facturas = await dbContext.Invoices
-                    .AsNoTracking()
-                    .IgnoreAutoIncludes()
-                    .Include(f => f.Customer)
-                    .Include(f => f.Vehicle)
-                    .Select(f => f.ToResponse())
+                    .Where(c =>
+                    (c.Customer.Name)
+                    .ToLower()
+                    .Contains(filtro.ToLower()
+                    )
+                    )
+                    .Select(c => c.ToResponse())
                     .ToListAsync();
                 return new Result<List<RentalInvoiceResponse>>()
                 {

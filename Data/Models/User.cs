@@ -12,12 +12,14 @@ namespace RentCar.Data.Models
         public string Name { get; set; } = null!;
         public string Username { get; set; } = null!;
 		public string Password { get; set; } = null!;
+		public string Role { get; set; } = null!;
 
 		public static User Crear(UserRequest user) => new User()
         {
             Name = user.Name,
             Username = user.Username,
-            Password = user.Password
+            Password = user.Password,
+            Role = user.Role
         };
         public bool Modificar(UserRequest user)
         {
@@ -25,6 +27,7 @@ namespace RentCar.Data.Models
             if (Name != user.Name) Name = user.Name; cambio = true;
             if (Username != user.Username) Username = user.Username; cambio = true;
             if (Password != user.Password) Password = user.Password; cambio = true;
+            if (Role != user.Role) Role = user.Role; cambio = true;
 
             return cambio;
         }
@@ -33,7 +36,8 @@ namespace RentCar.Data.Models
             Id = Id,
             Name = Name,
             Username = Username,
-            Password = Password
+            Password = Password,
+            Role = Role
         };
     }
 

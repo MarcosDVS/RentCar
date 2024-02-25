@@ -12,5 +12,6 @@ namespace RentCar.Data.Request
         public string Username { get; set; } = null!;
         [MaxLength(12, ErrorMessage = "La clave no puede tener mas de 12 digitos"), MinLength(8, ErrorMessage = "La clave no puede tener menos de 8 digitos"), Required(ErrorMessage = "La clave del usuario es obligatoria")]
         public string Password { get; set; } = null!;
+        public string Role { get; set; } = null!;
     }
 }

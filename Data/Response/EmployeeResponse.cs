@@ -7,6 +7,7 @@ namespace RentCar.Data.Response
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string Position { get; set; } = null!;
+        public decimal Salary { get; set; }
 
         public EmployeeRequest ToRequest()
         { 
@@ -14,7 +15,8 @@ namespace RentCar.Data.Response
             { 
                 Id = Id,
                 Name = Name, 
-                Position = Position 
+                Position = Position,
+                Salary = Salary
             }; 
         }
     }

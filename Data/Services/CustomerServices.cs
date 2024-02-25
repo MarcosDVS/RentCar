@@ -37,7 +37,7 @@ namespace RentCar.Data.Services
                 var vehicle = await dbContext.Customers
                     .FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (vehicle == null)
-                    return new Result() { Message = "No se encontro el vehiculo", Success = false };
+                    return new Result() { Message = "No se encontro el cliente", Success = false };
 
                 if (vehicle.Modificar(request))
                     await dbContext.SaveChangesAsync();
@@ -57,7 +57,7 @@ namespace RentCar.Data.Services
                 var customer = await dbContext.Customers
                     .FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (customer == null)
-                    return new Result() { Message = "No se encontro el usuario", Success = false };
+                    return new Result() { Message = "No se encontro el cliente", Success = false };
 
                 dbContext.Customers.Remove(customer);
                 await dbContext.SaveChangesAsync();
