@@ -3,38 +3,98 @@
 
 <PageTitle>Inicio</PageTitle>
 
-<div class="container mt-1">
-    <!-- Jumbotron Section -->
-    <div class="jumbotron text-center">
-        <img src="logo1.jpeg" alt="" class="rounded-circle img-fluid img-thumbnail mt-4" style="width: 140px;">
-        <h1 class="display-4"><strong>¡RentCar El Caribe!</strong></h1>
-    </div>
-    <hr>
+<style>
+    /* Estilos CSS */
+    body{
+     background-color: #e0eadc; /* Gris claro */
+    /* Opciones adicionales:
+       background-color: #f0f8ff;  Azul claro
+       background-color: #e0eadc;  Verde claro
+    */
+    }
+    .img-container {
+        max-width: 100px; /* Ajusta el ancho máximo según tus necesidades */
+        display: inline-block; /* Alinea las imágenes en línea */
+    }
 
-    <!-- Cards Section -->
-    <div class="row mt-4">
-        <!-- Vehículos Disponibles Card -->
-        <div class="col-md-6 mb-4">
+    .img-container img {
+        width: 100%; /* Hace que la imagen ocupe el 100% del contenedor */
+        height: auto; /* Mantiene la proporción de aspecto */
+    }
+
+    .oi {
+        font-size: 1.2em;
+    }
+
+    .card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<h3 class="mt-4">
+    <span class="oi oi-dashboard oi mr-2"></span>
+    <strong>RentCar Dashboard</strong> 
+</h3>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
             <div class="card">
-                <img src="cars.jpeg" class="card-img-top" alt="Vehículos Disponibles" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
-                    <h5 class="card-title"><strong>Vehículos Disponibles</strong></h5>
-                    <p class="card-text">Explora nuestra flota de vehículos y encuentra el adecuado para tus necesidades de alquiler.</p>
-                    <a href="/vehiculos" class="btn btn-primary">Ver Vehículos</a>
+                    <h5 class="card-title">
+                        <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
+                        <strong>Vehículos Rentados</strong>
+                    </h5>
+                    <p class="card-text">Cantidad: @VehiculosRentados</p>
                 </div>
             </div>
         </div>
-
-        <!-- Alquiler de Vehículos Card -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6">
             <div class="card">
-                <img src="rent.jpeg" class="card-img-top" alt="Alquiler de Vehículos" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
-                    <h5 class="card-title"><strong>Alquiler de Vehículos</strong></h5>
-                    <p class="card-text">Renta un vehículo de manera fácil y rápida. ¡Descubre la libertad de movilidad!</p>
-                    <a href="/rentalInvoices" class="btn btn-success">Alquilar Vehículo</a>
+                    <h5 class="card-title">
+                        <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
+                        <strong>Vehículos Disponibles</strong>
+                    </h5>
+                    <p class="card-text">Cantidad: @VehiculosDisponibles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="oi oi-dollar oi mr-2"></span>
+                        <strong>Ingresos del Mes</strong>
+                    </h5>
+                    <p class="card-text">Monto: $@IngresosMes.ToString("N2")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="oi oi-dollar oi mr-2"></span>
+                        <strong>Ingresos del Año</strong>
+                    </h5>
+                    <p class="card-text">Monto: $@IngresosAnio.ToString("N2")</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+@code
+{
+
+    public int VehiculosRentados = 20;
+    public int VehiculosDisponibles = 30;
+    public decimal IngresosMes = 15000;
+    public decimal IngresosAnio = 180000;
+
+}
