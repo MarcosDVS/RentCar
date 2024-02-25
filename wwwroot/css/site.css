@@ -1,5 +1,18 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+body{
+    background-color: #e0eadc; /* Gris claro */
+   /* Opciones adicionales:
+      background-color: #f0f8ff;  Azul claro
+      background-color: #e0eadc;  Verde claro
+   */
+}
+.card {
+    background-color: #f7f7f5; /* Beige claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
