@@ -79,7 +79,7 @@
                     @if (Message != null)
                     {
                         <div class="alert-warning">
-                            <span class="text-dark">@Message</span>
+                            <label class="text-dark"><strong>@Message</strong></label>
                         </div>
                     }
 
@@ -92,7 +92,7 @@
                         <div class="col">
                             <h5><strong>Resumen:</strong></h5>
                         </div>
-                        <div class="col text-end">
+                        <div class="col-5 text-end">
                             <div class="input-group d-print-none">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-white text-black border-0">
@@ -102,13 +102,15 @@
                                 <input type="number" placeholder="Monto Pagado" id="montoPagado" @bind="@MontoPagado" class="form-control rounded" />
                                 @if (!Paid)
                                 {
-                                    <button type="button" class="btn btn-outline-primary rounded" @onclick="CalculateTotalAmount">
-                                        Calcular
+                                    <button type="button" class="btn btn-outline-primary text-dark rounded" @onclick="CalculateTotalAmount">
+                                        <strong>Calcular</strong>
                                     </button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-outline-success">Guardar</button>
+                                    <button type="submit" class="btn btn-outline-warning text-dark rounded">
+                                        <strong>Pagar</strong>
+                                    </button>
                                 }
                             </div>
                         </div>
@@ -212,7 +214,7 @@
 
         if (string.IsNullOrEmpty(CarName))
         {
-            Message = "😒 Debes seleccionar un vehiculo. 🛒";
+            Message = "😒 Debes seleccionar un vehiculo. 🚗";
             return;
         }
         DateTime startDate = request.RentalDate;
@@ -224,13 +226,6 @@
 
         TotalPagar = request.TotalAmount;
         RentedDays = totalDays;
-
-        // Verificar si MontoPagado es menor que TotalPagar
-        if (MontoPagado < TotalPagar)
-        {
-            Message = "😒 El monto pagado es menor que el total a pagar. 💰";
-            return;
-        }
 
         Message = null;
         Paid = true;
@@ -289,6 +284,14 @@
 
     public async Task Send()
     {
+        // Verificar si MontoPagado es menor que TotalPagar
+        if (MontoPagado < TotalPagar)
+        {
+            Message = "😒 El monto pagado es menor que el total a pagar. 💰";
+            return;
+        }
+        Message = null;
+
         if (request.Id == 0)
         {
             var r = await rentalInvoiceServices.Crear(request);
