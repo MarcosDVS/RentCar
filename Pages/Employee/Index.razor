@@ -93,7 +93,7 @@
                         </h5>
                         <small class="card-text"><b>Posición:</b> @employee.Position</small>
                         <br>
-                        <small class="card-text"><b>Posición:</b> @employee.Salary</small>
+                        <small class="card-text"><b>Posición:</b> $@employee.Salary.ToString("N2")</small>
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-warning" @onclick="()=>Editar(employee)">

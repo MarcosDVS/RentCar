@@ -22,7 +22,7 @@
     @if (ShowForm)
     {
         <div class="row">
-            <div class="col-9">
+            <div class="col-7">
                 <h3><strong>@TituloForm</strong></h3>
             </div>
             <div class="col text-end">
@@ -40,6 +40,7 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
 
+            @*Selecciona el cliente*@
             <div class="mb-3 input-group">
                 <input class="form-control" placeholder="Cliente" aria-label="Cliente" 
                 aria-describedby="button-addon2" list="contactos" 
@@ -53,6 +54,7 @@
                 </datalist>
             </div>
 
+            @*Detalla los datos de la renta, precio x dia, vehiculo, y fecha de retorno*@
             <div class="card">
                 <div class="card-body">
                     <div class="mb-2 input-group">
@@ -93,6 +95,7 @@
                 </div>
             </div>
 
+            @*Resumen de la venta*@
             <div class="card mt-2">
                 <div class="card-header">
                     <div class="row align-items-center">
@@ -122,11 +125,18 @@
                     
 
                     <ul class="list-unstyled float-end me-0">
-                        <li><span class="me-3 float-start"><strong>Total Amount:</strong></span><i class="fas fa-dollar-sign"></i> @TotalPagar.ToString("N2")
+                        <li>
+                            <span class="me-3 float-start"><strong>Total Amount:</strong></span>
+                            <i class="fas fa-dollar-sign">$@TotalPagar.ToString("N2")</i>
                         </li>
-                        <li> <span class="me-5"><strong>Discount:</strong></span><i class="fas fa-dollar-sign"></i> 0,00</li>
-                        <li><span class="float-start" style="margin-right: 35px;"><strong>Rented Days</strong> </span><i
-                            class="fas fa-dollar-sign"></i>@RentedDays</li>
+                        <li> 
+                            <span class="me-5"><strong>Discount:</strong></span>
+                            <i class="fas fa-dollar-sign">$0,00</i>
+                        </li>
+                        <li>
+                            <span class="float-start" style="margin-right: 35px;"><strong>Rented Days </strong> </span>
+                            <i class="fas fa-dollar-sign">@RentedDays</i>
+                        </li>
                     </ul>
 
                 </div>
