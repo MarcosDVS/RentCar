@@ -96,6 +96,12 @@
     <div class="login-form">
         <form>
             <h2><strong>Iniciar sesión</strong></h2>
+            @if (mensajeError != null)
+            {
+                <div class="alert-warning text-center">
+                    <label class="text-dark"><strong>@mensajeError</strong></label>
+                </div>
+            }
             <br>
             <div class="form-group">
                 <input placeholder="User Name" type="text" class="form-control" id="username" @bind="model.UserName" required>
@@ -107,12 +113,13 @@
             <p>
                 ¿Aún no tienes una cuenta? <a href="#" @onclick="CrearUsuario">Crear Usuario</a>
             </p>
+            
         </form>
     </div>
 </div>
 
 @code {
-    private string mensajeError = "";
+    private string mensajeError = null;
     private LoginModel model = new LoginModel();
 
     private class LoginModel
@@ -130,7 +137,7 @@
         }
         else
         {
-            var userAccount = userAccountService.GetByUserName(model.UserName);
+            var userAccount = userAccountService.GetByUserName(model.UserName.ToLower());
             if(userAccount == null || userAccount.Password != model.Password)
             {
                 mensajeError = "Las Credenciales Son Incorrectas ❌";
