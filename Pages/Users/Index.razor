@@ -32,7 +32,12 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="modal-body">
-
+                        @if (Message != null)
+                        {
+                            <div class="alert-warning text-center">
+                                <label class="text-dark"><strong>@Message</strong></label>
+                            </div>
+                        }
                         <div class="form-group input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white text-black border-0">
@@ -132,6 +137,7 @@
     public bool ShowForm { get; set; } = false;
     public bool ShowDetails { get; set; } = false;
     public string Filtro { get; set; } = "";
+    public string Message { get; set; } = null;
     public List<UserResponse> Users { get; set; }
         = new List<UserResponse>();
     public UserResponse SelectedUser { get; set; }
@@ -143,6 +149,7 @@
     {
         request = new UserRequest();
         ShowForm = false;
+        Message = null;
     }
     async Task CargarUsuarios()
     {
@@ -185,6 +192,23 @@
 
     public async Task Send()
     {
+        // Verificar si el correo electrónico ya existe en la base de datos
+        var existingUser = Users.FirstOrDefault(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase));
+        if (existingUser != null)
+        {
+            Message = "Patron el correo electrónico ya existe 🤨";
+            return;
+        }
+        if (request.Name.Length < 4)
+        {
+            Message = "😒 Ingrese su nombre completa. 🙍‍♂️";
+            return;
+        }
+        if (request.Password.Length < 4 || request.Password.Length > 8)
+        {
+            Message = "😒 La contraseña debe tener entre 4 y 8 caracteres. 🔑";
+            return;
+        }
         if (request.Id == 0)
         {
             //Debo registrar el contacto..

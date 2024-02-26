@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using RentCar.Data.Request;
+@using RentCar.Data.Response;
 @using RentCar.Authentication;
 @inject IUserAccountService userAccountService
 @inject AuthenticationStateProvider authStateProvider
@@ -33,9 +35,6 @@
     .form-group label {
         font-size: 14px;
         color: #555;
-    }
-    body {
-        background-color: #f4f4f4;
     }
     .form-control {
         width: 100%;
@@ -94,32 +93,74 @@
 
 <div class="login-container">
     <div class="login-form">
-        <form>
-            <h2><strong>Iniciar sesión</strong></h2>
-            @if (mensajeError != null)
-            {
-                <div class="alert-warning text-center">
-                    <label class="text-dark"><strong>@mensajeError</strong></label>
+        @if(!NewUser)
+        {
+            <form>
+                <h2><strong>Iniciar sesión</strong></h2>
+                @if (mensajeError != null)
+                {
+                    <div class="alert-warning text-center">
+                        <label class="text-dark"><strong>@mensajeError</strong></label>
+                    </div>
+                }
+                <br>
+                <div class="form-group">
+                    <input placeholder="User Name" type="text" class="form-control" id="username" @bind="model.UserName" required>
                 </div>
-            }
-            <br>
-            <div class="form-group">
-                <input placeholder="User Name" type="text" class="form-control" id="username" @bind="model.UserName" required>
-            </div>
-            <div class="form-group">
-                <input placeholder="Password" type="password" class="form-control" id="password" @bind="model.Password" required>
-            </div>
-            <button type="button" class="btn btn-primary" @onclick="Authenticate">Iniciar sesión</button>
-            <p>
-                ¿Aún no tienes una cuenta? <a href="#" @onclick="CrearUsuario">Crear Usuario</a>
-            </p>
-            
-        </form>
+                <div class="form-group">
+                    <input placeholder="Password" type="password" class="form-control" id="password" @bind="model.Password" required>
+                </div>
+                <button type="button" class="btn btn-primary" @onclick="Authenticate">Iniciar sesión</button>
+                <p>
+                    ¿Aún no tienes una cuenta? 
+                    <a href="#" @onclick="()=> {
+                        NewUser=true;
+                        mensajeError = null;}">Crear Usuario
+                    </a>
+                </p>
+                
+            </form>
+        }
+        else
+        {
+            <form>
+                <h2><strong>Registrarme</strong></h2>
+                @if (mensajeError != null)
+                {
+                    <div class="alert-warning text-center">
+                        <label class="text-dark"><strong>@mensajeError</strong></label>
+                    </div>
+                }
+                <br>
+                <div class="form-group">
+                    <input placeholder="Full Name" type="text" class="form-control" id="username" @bind="request.Name" required>
+                </div>
+                <div class="form-group">
+                    <input placeholder="User Name" type="text" class="form-control" id="username" @bind="request.Username" required>
+                </div>
+                <div class="form-group">
+                    <input placeholder="Password" type="password" class="form-control" id="password" @bind="request.Password" required>
+                </div>
+                <button type="button" class="btn btn-primary" @onclick="Send">Register</button>
+                <p>
+                    Ya tengo una cuenta 
+                    <a href="#" @onclick="()=> {NewUser=false; 
+                        request = new UserRequest(); 
+                        mensajeError = null;}">Back
+                    </a>
+                </p>
+                
+            </form>
+        }
     </div>
 </div>
 
 @code {
+    public UserRequest request { get; set; } = new();
+    public List<UserResponse> Users { get; set; } = new();
+    public string Filtro { get; set; } = "";
     private string mensajeError = null;
+    private bool NewUser = false;
     private LoginModel model = new LoginModel();
 
     private class LoginModel
@@ -162,10 +203,65 @@
         // Llamada a CrearUsuarioAdmin antes de intentar autenticar
         await userServices.CreatUser();
         // Resto de tu código OnInitializedAsync
+        await CargarUsuarios();
+    }
+    async Task CargarUsuarios()
+    {
+        var resultado =
+        await userServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Users = resultado.Data!;
+        }
     }
 
-    void CrearUsuario()
+    public async Task Send()
     {
-        NavigationManager.NavigateTo("/createUser");
+        // Verificar si el correo electrónico ya existe en la base de datos
+        var existingUser = Users.FirstOrDefault(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase));
+        if (existingUser != null)
+        {
+            mensajeError = "Patron el correo electrónico ya existe 🤨";
+            return;
+        }
+        if (string.IsNullOrEmpty(request.Name))
+        {
+            mensajeError = "😒 Ingrese su nombre completa. 🙍‍♂️";
+            return;
+        }
+        if (string.IsNullOrEmpty(request.Username))
+        {
+            mensajeError = "😒 Ingrese su Email. 📧";
+            return;
+        }
+        if (string.IsNullOrEmpty(request.Password))
+        {
+            mensajeError = "😒 Ingrese su contraseña. 🔑";
+            return;
+        }
+        if (request.Password.Length < 4 || request.Password.Length > 8)
+        {
+            mensajeError = "😒 La contraseña debe tener entre 4 y 8 caracteres. 🔑";
+            return;
+        }
+        if (request.Id == 0)
+        {
+            
+            mensajeError = null;
+            request.Role = "user";
+            //Debo registrar el contacto..
+            var r = await userServices.Crear(request);
+            if (r.Success)
+            {
+                Cancelar();
+                await CargarUsuarios();
+                StateHasChanged();
+            }
+        }
+    }
+    void Cancelar()
+    {
+        NewUser = false;
+        request = new UserRequest();
     }
 }
