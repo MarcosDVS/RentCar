@@ -1,4 +1,6 @@
 @page "/main"
+@using RentCar.Data.Request;
+@using RentCar.Data.Response;
 @attribute [Authorize]
 
 <PageTitle>Inicio</PageTitle>
@@ -45,7 +47,7 @@
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
                         <strong>Vehículos Rentados</strong>
                     </h5>
-                    <p class="card-text">Cantidad: @VehiculosRentados</p>
+                    <p class="card-text">Cantidad: (@Vehicles.Count)</p>
                 </div>
             </div>
         </div>
@@ -56,7 +58,7 @@
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
                         <strong>Vehículos Disponibles</strong>
                     </h5>
-                    <p class="card-text">Cantidad: @VehiculosDisponibles</p>
+                    <p class="card-text">Cantidad: (@Vehicles.Count)</p>
                 </div>
             </div>
         </div>
@@ -91,10 +93,26 @@
 
 @code
 {
-
+    
+    public string Filtro { get; set; } = "";
+    public List<VehicleResponse> Vehicles { get; set; } = new();
     public int VehiculosRentados = 20;
     public int VehiculosDisponibles = 30;
     public decimal IngresosMes = 15000;
     public decimal IngresosAnio = 180000;
 
+    async Task CargarVehiculos()
+    {
+        var resultado =
+        await vehicleServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Vehicles = resultado.Data!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarVehiculos();
+    }
 }

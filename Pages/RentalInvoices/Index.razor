@@ -22,7 +22,7 @@
     @if (ShowForm)
     {
         <div class="row">
-            <div class="col">
+            <div class="col-9">
                 <h3><strong>@TituloForm</strong></h3>
             </div>
             <div class="col text-end">
@@ -96,12 +96,12 @@
             <div class="card mt-2">
                 <div class="card-header">
                     <div class="row align-items-center">
-                        <div class="col">
-                            <h5><strong>Resumen:</strong></h5>
+                        <div class="col input-group">
+                            <label class="input-group-text"><strong>Resumen:</strong></label>
+                            <input type="number" placeholder="Monto Pagado" id="montoPagado" @bind="@MontoPagado" class="form-control rounded" />
                         </div>
                         <div class="col-5 text-end">
-                            <div class="input-group d-print-none">
-                                <input type="number" placeholder="Monto Pagado" id="montoPagado" @bind="@MontoPagado" class="form-control rounded" />
+                            <div class="d-print-none">
                                 @if (!Paid)
                                 {
                                     <button type="button" class="btn btn-outline-primary text-dark rounded" @onclick="CalculateTotalAmount">
