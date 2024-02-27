@@ -29,4 +29,4 @@ For inquiries or support, please contact our dedicated customer service team at 
 
 **Note:** This is a simple application with various aspects to improve. In the future, user registration will be possible, allowing users to access and schedule vehicle rentals.
 
-The technologies used in this project are HTML, CSS, C#, Entity Framework Core, and SQLite.
+**Technologies used in this project:** HTML, CSS, C#, Entity Framework Core, and SQLite.
