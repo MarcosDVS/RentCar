@@ -1,5 +1,7 @@
 # RentCar
 
+**Note: if you want to uses this app you will need this, Email: admin Passwork: 1234**
+
 **Blazor Server RentCar El Caribe App Description:**
 
 Welcome to our Blazor Server RentCar application, a robust solution designed to optimize your car rental business. This comprehensive platform offers a range of features to effectively manage various aspects of your operation. Here's a summary of the key functionalities:
