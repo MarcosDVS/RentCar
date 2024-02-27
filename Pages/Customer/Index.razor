@@ -52,7 +52,13 @@
                                 </span>
                             </div>
                             <input type="tel" placeholder="Phone Number" id="nombre" class="form-control" 
-                            @bind="@request.PhoneNumber" required />
+                                @bind="@request.PhoneNumber" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" 
+                                required 
+                                pattern="\d{10}" 
+                                title="Debe tener 10 dígitos"
+                            />
+                            
                         </div>
 
                         <div class="form-group input-group mb-3">
