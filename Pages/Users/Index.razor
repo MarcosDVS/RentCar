@@ -45,7 +45,7 @@
                                 </span>
                             </div>
                             <input type="text" placeholder="Full Name" id="nombre" class="form-control" 
-                            @bind="@request.Name" required />
+                            @bind="@request.Name" pattern=".{3,}" title="Full Name must be at least 3 characters" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
@@ -181,7 +181,8 @@
                 Id = user.Id,
                 Name = user.Name,
                 Username = user.Username,
-                Password = user.Password
+                Password = user.Password,
+                Role = user.Role
             };
     }
 
@@ -192,13 +193,6 @@
 
     public async Task Send()
     {
-        // Verificar si el correo electrónico ya existe en la base de datos
-        var existingUser = Users.FirstOrDefault(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase));
-        if (existingUser != null)
-        {
-            Message = "Patron el correo electrónico ya existe 🤨";
-            return;
-        }
         if (request.Name.Length < 4)
         {
             Message = "😒 Ingrese su nombre completa. 🙍‍♂️";
@@ -211,6 +205,13 @@
         }
         if (request.Id == 0)
         {
+            // Verificar si el correo electrónico ya existe en la base de datos
+            var existingUser = Users.FirstOrDefault(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
+            {
+                Message = "Patron el correo electrónico ya existe 🤨";
+                return;
+            }
             //Debo registrar el contacto..
             var r = await userServices.Crear(request);
             if (r.Success)

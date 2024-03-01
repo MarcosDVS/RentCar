@@ -57,7 +57,7 @@ namespace RentCar.Data.Services
                 var vehicle = await dbContext.Vehicles
                     .FirstOrDefaultAsync(v => v.Id == request.Id);
                 if (vehicle == null)
-                    return new Result() { Message = "No se encontro el usuario", Success = false };
+                    return new Result() { Message = "No se encontro el vehiculo", Success = false };
 
                 dbContext.Vehicles.Remove(vehicle);
                 await dbContext.SaveChangesAsync();

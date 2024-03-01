@@ -16,6 +16,8 @@
     }
 
     .login-form {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: white; /* Set a background color for the form */
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -105,10 +107,12 @@
                 }
                 <br>
                 <div class="form-group">
-                    <input placeholder="User Name" type="text" class="form-control" id="username" @bind="model.UserName" required>
+                    <input placeholder="User Name" type="email" class="form-control" id="username" 
+                        @bind="model.UserName" required>
                 </div>
                 <div class="form-group">
-                    <input placeholder="Password" type="password" class="form-control" id="password" @bind="model.Password" required>
+                    <input placeholder="Password" type="password" class="form-control" id="password" 
+                        @bind="model.Password" required>
                 </div>
                 <button type="button" class="btn btn-primary" @onclick="Authenticate">Iniciar sesión</button>
                 <p>
@@ -133,13 +137,16 @@
                 }
                 <br>
                 <div class="form-group">
-                    <input placeholder="Full Name" type="text" class="form-control" id="username" @bind="request.Name" required>
+                    <input placeholder="Full Name" type="text" class="form-control" id="username" 
+                        @bind="request.Name" pattern=".{3,}" title="Full Name must be at least 3 characters" required>
                 </div>
                 <div class="form-group">
-                    <input placeholder="User Name" type="text" class="form-control" id="username" @bind="request.Username" required>
+                    <input placeholder="User Name" type="email" class="form-control" id="username" 
+                        @bind="request.Username" required>
                 </div>
                 <div class="form-group">
-                    <input placeholder="Password" type="password" class="form-control" id="password" @bind="request.Password" required>
+                    <input placeholder="Password" type="password" class="form-control" id="password" 
+                        @bind="request.Password" required>
                 </div>
                 <button type="button" class="btn btn-primary" @onclick="Send">Register</button>
                 <p>

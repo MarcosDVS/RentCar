@@ -99,7 +99,7 @@
                         <button class="btn btn-warning" @onclick="()=>Editar(employee)">
                             <span class="oi oi-pencil"></span>
                         </button>
-                        <button class="btn btn-danger" @onclick="()=>Eliminar(employee)">
+                        <button class="btn btn-danger" @onclick="async ()=>{await Eliminar(employee);}">
                             <span class="oi oi-trash"></span>
                         </button>
                     </div>
@@ -202,27 +202,18 @@
             {
                 Id = employee.Id,
                 Name = employee.Name,
-                Position = employee.Position
+                Position = employee.Position,
+                Salary = employee.Salary
             };
     }
 
-    public async Task Eliminar(EmployeeResponse employee)
+    public async Task Eliminar(EmployeeResponse user)
     {
-        var confirmacion = await JS.InvokeAsync<bool>("confirm", "¿Está seguro de eliminar el empleado?");
-        if (confirmacion)
+        var resultado = await employeeService.Eliminar(user.ToRequest());
+        if (resultado.Success)
         {
-            var resultado = await employeeService.Eliminar(new EmployeeRequest { Id = employee.Id });
-            if (resultado.Success)
-            {
-                await CargarEmployees();
-                ShowForm = false;
-                ShowDetails = false;
-                request = new EmployeeRequest();
-            }
-            else
-            {
-                // Manejar el error, mostrar mensaje o realizar alguna acción
-            }
+            await CargarEmployees();
+            StateHasChanged();
         }
     }
 }
