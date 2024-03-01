@@ -9,6 +9,7 @@ namespace RentCar.Data.Response
         public string Make { get; set; } = null!;
         public string Model { get; set; } = null!;
         public int Year { get; set; } = 2002;
+        public bool Rented { get; set; } = false;
 
         public string CodigoDescripcion => $"{Make} {Model} {Year}";
         public VehicleRequest ToRequest()
@@ -19,8 +20,9 @@ namespace RentCar.Data.Response
                 PlateNumber = PlateNumber,
                 Make = Make,
                 Model = Model,
-                Year = Year
-            };
+                Year = Year,
+                Rented = Rented
+        };
         }
     }
 }

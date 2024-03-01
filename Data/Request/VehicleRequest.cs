@@ -13,6 +13,7 @@ namespace RentCar.Data.Request
         [Required(ErrorMessage = "El modelo del vehiculo es obligatorio")]
         public string Model { get; set; } = null!;
         [Required(ErrorMessage = "El año del vehiculo es obligatorio")]
-        public int Year { get; set; } = 2000;
+        public int Year { get; set; } = 2002;
+        public bool Rented { get; set; } = false;
     }
 }
