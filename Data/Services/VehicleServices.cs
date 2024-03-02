@@ -97,5 +97,29 @@ public class VehicleServices : IVehicleServices
             };
         }
     }
+    public async Task<bool> MarkAsRented(int? carId)
+    {
+        try
+        {
+            var car = await dbContext.Vehicles
+                .FirstOrDefaultAsync(a => a.Id == carId);
+
+            if (car != null)
+            {
+                car.Rented = !car.Rented; // Alternar el estado (alquilado/no alquilado)
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false; // El vehículo con el ID especificado no se encontró
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
 
 }

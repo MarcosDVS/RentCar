@@ -96,9 +96,11 @@
                             <span class="oi oi-person"></span>
                             <b>@item.Name</b>
                         </h5>
-                        <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
-                        <br>
-                        <small class="card-text"><b>Email:</b> @item.Email</small>
+                        <details>
+                            <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
+                            <br>
+                            <small class="card-text"><b>Email:</b> @item.Email</small>
+                        </details>
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-warning" @onclick="()=>Editar(item)">

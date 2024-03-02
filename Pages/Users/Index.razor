@@ -110,11 +110,13 @@
                                 <b>@row.Name</b>
                             </h5>
                         </div>
-                        <small class="card-text"><b>Email:</b> @row.Username</small>
-                        <br>
-                        <small><strong>Password:</strong> @row.Password</small>
-                        <br>
-                        <small><strong>Role:</strong> @row.Role</small>
+                        <details>
+                            <small class="card-text"><b>Email:</b> @row.Username</small>
+                            <br>
+                            <small><strong>Password:</strong> @row.Password</small>
+                            <br>
+                            <small><strong>Role:</strong> @row.Role</small>
+                        </details>
                     </div>
                     <div class="card-footer">
                         <button class="btn btn-warning" @onclick="()=>Editar(row)">

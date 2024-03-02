@@ -47,7 +47,7 @@
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
                         <strong>Vehículos Rentados</strong>
                     </h5>
-                    <p class="card-text">Cantidad: (@Vehicles.Count)</p>
+                    <p class="card-text">Cantidad: (@Vehicles.Where(car=> car.Rented == true).Count())</p>
                 </div>
             </div>
         </div>
@@ -58,7 +58,7 @@
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
                         <strong>Vehículos Disponibles</strong>
                     </h5>
-                    <p class="card-text">Cantidad: (@Vehicles.Count)</p>
+                    <p class="card-text">Cantidad: (@Vehicles.Where(car=> car.Rented == false).Count())</p>
                 </div>
             </div>
         </div>
@@ -96,10 +96,11 @@
     
     public string Filtro { get; set; } = "";
     public List<VehicleResponse> Vehicles { get; set; } = new();
-    public int VehiculosRentados = 20;
-    public int VehiculosDisponibles = 30;
-    public decimal IngresosMes = 15000;
-    public decimal IngresosAnio = 180000;
+    public List<RentalInvoiceResponse> Invoices { get; set; } = new();
+    public int VehiculosRentados = 0;
+    public int VehiculosDisponibles = 0;
+    public decimal IngresosMes = 0;
+    public decimal IngresosAnio = 0;
 
     async Task CargarVehiculos()
     {
@@ -110,9 +111,50 @@
             Vehicles = resultado.Data!;
         }
     }
-
+    async Task CargarFacturas()
+    {
+        var resultado = await rentalInvoiceServices.Consultar(Filtro);
+        if (resultado.Success)
+        {
+            Invoices = resultado.Data!;
+            StateHasChanged(); // Actualizar la interfaz de usuario
+        }
+        else
+        {
+            // Manejar error
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await CargarVehiculos();
+        await CargarFacturas();
+
+        // Al inicializar la página, calcula los ingresos del mes y del año
+        IngresosMes = OneMonthIncome();
+        IngresosAnio = OneYearIncome();
+    }
+
+    public decimal OneMonthIncome()
+    {
+        // Aquí debes implementar la lógica para calcular los ingresos del mes
+        // Puedes utilizar la propiedad RentalDate de las facturas y sumar los montos correspondientes
+        // La lógica exacta dependerá de la estructura de tus datos y cómo estás almacenando los ingresos en tus facturas
+        // La implementación a continuación es solo un ejemplo ilustrativo y puede necesitar ajustes según tus necesidades.
+
+        var hoy = DateTime.Today;
+        return Invoices
+            .Where(invoice => invoice.RentalDate.Month == hoy.Month && invoice.RentalDate.Year == hoy.Year)
+            .Sum(invoice => invoice.TotalAmount);
+    }
+
+    public decimal OneYearIncome()
+    {
+        // Aquí debes implementar la lógica para calcular los ingresos del año
+        // Similar a la función anterior, pero verificando el año completo
+
+        var hoy = DateTime.Today;
+        return Invoices
+            .Where(invoice => invoice.RentalDate.Year == hoy.Year)
+            .Sum(invoice => invoice.TotalAmount);
     }
 }

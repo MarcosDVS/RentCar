@@ -9,5 +9,6 @@ namespace RentCar.Data.Services
         Task<Result> Crear(VehicleRequest request);
         Task<Result> Eliminar(VehicleRequest request);
         Task<Result> Modificar(VehicleRequest request);
+        Task<bool> MarkAsRented(int? carId);
     }
 }

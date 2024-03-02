@@ -15,6 +15,8 @@ namespace RentCar.Data.Response
         public decimal PriceDay { get; set; } = 1500;
         public decimal TotalAmount { get; set; }
 
+        public int RentedDays => (int)(ReturnDate - RentalDate).TotalDays;
+
         public string NombreCustomerTexto => Customer != null ? Customer.Name : "N/A";
         public string NombreVehicleTexto => Vehicle != null ? Vehicle.Make +" " + Vehicle.Model +" " + Vehicle.Year : "N/A";
 

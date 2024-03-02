@@ -146,35 +146,71 @@
     }
     else
     {
+        @*<div class="modal" style="display: @(Details ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><b>Details</b></h5>
+                        <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseDeatils">
+                            <span aria-hidden="true" class="oi oi-x"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="modal-title"><b>Body</b></h5>
+                        <p>Chuzma</p>
+                    </div>
+                    <div class="modal-footer">
+                        <h5 class="modal-title"><b>Footer</b></h5>
+                        <p>Chuzma</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>*@
+
         <div class="row d-flex justify-content-center">
             @foreach (var invoice in Invoices)
             {
                 <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
-                        <div class="card" style="width:18rem;">
-                            <div class="card-body">
-                                <h5 class="card-title"><b>@invoice.NombreCustomerTexto</b></h5>
-                                <div class="card-text">
-                                    <small><b>Vehiculo:</b> @invoice.NombreVehicleTexto</small>
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title"><b>Invoice N°: @invoice.Id</b></h5>
+                            <div class="card-text">
+                                <small><b>Customer:</b> @invoice.NombreCustomerTexto</small>
+                                <br>
+                                <small><b>Vehicle:</b> @invoice.NombreVehicleTexto</small>
+                                <br>
+                                <details>
+                                    <small><b>Rental Date:</b> @invoice.RentalDate.ToString("yyyy-MM-dd")</small>
                                     <br>
-                                    <small><b>Rented:</b> @invoice.RentalDate</small>
+                                    <small><b>Return Date:</b> @invoice.ReturnDate.ToString("yyyy-MM-dd")</small>
                                     <br>
-                                    <small><b>Return:</b> @invoice.ReturnDate</small>
-                                </div>
-                            </div>
-                            <div class="card-footer text-end">
-                                <button @onclick="()=>Seleccionar(invoice.Id)"
-                                    class="btn btn-warning">
-                                    <span class="oi oi-pencil"></span>
-                                </button>
-                                <button @onclick="()=>Eliminar(invoice)"
-                                    class="btn btn-danger">
-                                    <span class="oi oi-trash"></span>
-                                </button>
+                                    <small><b>Rented Days:</b> @invoice.RentedDays</small>
+                                    <br>
+                                    <small><b>Total Amount:</b> $@invoice.TotalAmount.ToString("N2")</small>
+                                </details>
                             </div>
                         </div>
+                        <div class="card-footer text-end">
+                          @*<button @onclick="OpenDeatils" class="btn btn-info">
+                                <span class="oi oi-info"></span>
+                            </button>*@
+                            <button @onclick="()=>Seleccionar(invoice.Id)"
+                                    class="btn btn-warning">
+                                <span class="oi oi-pencil"></span>
+                                Edit
+                            </button>
+                            <button @onclick="()=>Eliminar(invoice)"
+                                    class="btn btn-danger">
+                                <span class="oi oi-trash"></span>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
+
     }
 </div>
 @code {
@@ -185,11 +221,22 @@
     public string CarName { get; set; } = string.Empty;
     public decimal MontoPagado { get; set; }
     public bool ShowForm { get; set; } = false;
+    public bool Details { get; set; } = false;
     public bool Paid { get; set; } = false;
     public string Filtro { get; set; } = "";
     public string Message { get; set; } = "";
     public decimal TotalPagar { get; set; } = 0;
     public int RentedDays { get; set; } = 0;
+
+    void CloseDeatils()
+    {
+        Details = false;
+    }
+
+    void OpenDeatils()
+    {
+        Details = true;
+    }
     
     public List<RentalInvoiceResponse> Invoices { get; set; }
         = new List<RentalInvoiceResponse>();
@@ -302,47 +349,6 @@
         }
     }
 
-    public async Task Send()
-    {
-        // Verificar si MontoPagado es menor que TotalPagar
-        if (MontoPagado < TotalPagar)
-        {
-            Message = "😒 El monto pagado es menor que el total a pagar. 💰";
-            return;
-        }
-        Message = null;
-
-        if (request.Id == 0)
-        {
-            var r = await rentalInvoiceServices.Crear(request);
-            if (r.Success)
-            {
-                Cancelar();
-                await CargarFacturas();
-            }
-            else
-            {
-                // Manejar error
-            }
-        }
-        else
-        {
-            var r = await rentalInvoiceServices.Modificar(request);
-            if (r.Success)
-            {
-                Cancelar();
-                await CargarFacturas();
-            }
-            else
-            {
-                // Manejar error
-            }
-        }
-
-        StateHasChanged(); // Actualizar la interfaz de usuario
-    }
-    
-
     public void Seleccionar(int Id)
     {
         ShowForm = true;
@@ -374,6 +380,7 @@
         var resultado = await rentalInvoiceServices.Eliminar(invoice.ToRequest());
         if (resultado.Success)
         {
+            var markAsRentedResult = await vehicleServices.MarkAsRented(request.VehicleId);
             await CargarFacturas();
             StateHasChanged();
         }
@@ -389,5 +396,52 @@
         Paid = false;
         Message = null;
     }
+
+    public async Task Send()
+    {
+        // Verificar si MontoPagado es menor que TotalPagar
+        if (MontoPagado < TotalPagar)
+        {
+            Message = "😒 El monto pagado es menor que el total a pagar. 💰";
+            return;
+        }
+        Message = null;
+
+        bool isCreateRequest = (request.Id == 0);
+
+        if (isCreateRequest)
+        {
+            var r = await rentalInvoiceServices.Crear(request);
+            if (r.Success)
+            {
+                var markAsRentedResult = await vehicleServices.MarkAsRented(request.VehicleId);
+                Cancelar();
+                await CargarFacturas();
+            }
+            else
+            {
+                // Manejar error
+            }
+        }
+        else
+        {
+            var markAsRentedResult = await vehicleServices.MarkAsRented(request.VehicleId);
+            var r = await rentalInvoiceServices.Modificar(request);
+            if (r.Success)
+            {
+                // Llamar a MarkAsRented después de modificar la factura de alquiler
+                Cancelar();
+                await CargarFacturas();
+            }
+            else
+            {
+                // Manejar error
+            }
+        }
+
+        StateHasChanged(); // Actualizar la interfaz de usuario
+    }
+
+    
 
 }
