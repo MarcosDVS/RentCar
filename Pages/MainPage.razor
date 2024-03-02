@@ -72,7 +72,7 @@
                         <span class="oi oi-dollar oi mr-2"></span>
                         <strong>Ingresos del Mes</strong>
                     </h5>
-                    <p class="card-text">Monto: $@IngresosMes.ToString("N2")</p>
+                    <p class="card-text">Monto: $@MonthIncome.ToString("N2")</p>
                 </div>
             </div>
         </div>
@@ -83,7 +83,7 @@
                         <span class="oi oi-dollar oi mr-2"></span>
                         <strong>Ingresos del Año</strong>
                     </h5>
-                    <p class="card-text">Monto: $@IngresosAnio.ToString("N2")</p>
+                    <p class="card-text">Monto: $@YearIncome.ToString("N2")</p>
                 </div>
             </div>
         </div>
@@ -99,8 +99,8 @@
     public List<RentalInvoiceResponse> Invoices { get; set; } = new();
     public int VehiculosRentados = 0;
     public int VehiculosDisponibles = 0;
-    public decimal IngresosMes = 0;
-    public decimal IngresosAnio = 0;
+    public decimal MonthIncome = 0;
+    public decimal YearIncome = 0;
 
     async Task CargarVehiculos()
     {
@@ -130,8 +130,8 @@
         await CargarFacturas();
 
         // Al inicializar la página, calcula los ingresos del mes y del año
-        IngresosMes = OneMonthIncome();
-        IngresosAnio = OneYearIncome();
+        MonthIncome = OneMonthIncome();
+        YearIncome = OneYearIncome();
     }
 
     public decimal OneMonthIncome()
