@@ -1,4 +1,4 @@
-﻿@page "/rentalInvoices"
+@page "/rentedcar"
 @attribute [Authorize]
 
 @if (!ShowForm)
@@ -6,14 +6,13 @@
     <div class="row">
         <div class="col-lg-3 col-sm-12 mt-2">
             <div class="text-left mb-3">
-                <button class="btn btn-outline-success" @onclick="()=>{ShowForm = !ShowForm; Message = null;}">
-                    <span class="oi oi-plus"></span>
-                    
+                <button class="btn btn-outline-danger" @onclick="Back">
+                    <span class="oi oi-arrow-thick-left"></span>
                 </button>
             </div>
         </div>
         <div class="col-lg-6 col-sm-12 mt-2 text-center">
-            <h2 class="text-center"><strong>Modulo de Facturas(@Invoices.Count)</strong></h2>
+            <h2 class="text-center"><strong>Vehiculos Rentados (@Invoices.Count)</strong></h2>
         </div>
         <hr>
     </div>
@@ -226,6 +225,11 @@
     public decimal TotalPagar { get; set; } = 0;
     public int RentedDays { get; set; } = 0;
 
+    void Back()
+    {
+        urlHelper.NavigateTo("/main");
+    }
+    
     void CloseDeatils()
     {
         Details = false;
@@ -336,9 +340,11 @@
     async Task CargarFacturas()
     {
         var resultado = await rentalInvoiceServices.Consultar(Filtro);
+
         if (resultado.Success)
         {
-            Invoices = resultado.Data!;
+            // Filtrar facturas que tengan vehículos con Rented = true
+            Invoices = resultado.Data?.Where(factura => factura.Vehicle?.Rented == true).ToList();
             StateHasChanged(); // Actualizar la interfaz de usuario
         }
         else

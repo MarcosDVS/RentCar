@@ -41,7 +41,7 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
-            <div class="card">
+            <div class="card" @onclick="CarRented">
                 <div class="card-body">
                     <h5 class="card-title">
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card">
+            <div class="card" @onclick="AvaibleCar">
                 <div class="card-body">
                     <h5 class="card-title">
                         <span class="img-container"><img class="rounded-circle" src="logo2.jpeg" alt=""></span>
@@ -93,7 +93,6 @@
 
 @code
 {
-    
     public string Filtro { get; set; } = "";
     public List<VehicleResponse> Vehicles { get; set; } = new();
     public List<RentalInvoiceResponse> Invoices { get; set; } = new();
@@ -102,6 +101,14 @@
     public decimal MonthIncome = 0;
     public decimal YearIncome = 0;
 
+    void CarRented()
+    {
+        urlHelper.NavigateTo("/rentedcar");
+    }
+    void AvaibleCar()
+    {
+        urlHelper.NavigateTo("/available");
+    }
     async Task CargarVehiculos()
     {
         var resultado =
