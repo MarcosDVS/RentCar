@@ -169,40 +169,57 @@
         </div>*@
 
         <div class="row d-flex justify-content-center">
-            @foreach (var invoice in Invoices)
+            @if (Invoices.Any())
             {
-                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title"><b>Invoice N°: @invoice.Id</b></h5>
-                            <div class="card-text">
-                                <small><b>Customer:</b> @invoice.NombreCustomerTexto</small>
-                                <br>
-                                <small><b>Vehicle:</b> @invoice.NombreVehicleTexto</small>
-                                <br>
-                                <details>
-                                    <small><b>Rental Date:</b> @invoice.RentalDate.ToString("yyyy-MM-dd")</small>
+                @foreach (var invoice in Invoices)
+                {
+                    <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title"><b>Invoice N°: @invoice.Id</b></h5>
+                                <div class="card-text">
+                                    <small><b>Customer:</b> @invoice.NombreCustomerTexto</small>
                                     <br>
-                                    <small><b>Return Date:</b> @invoice.ReturnDate.ToString("yyyy-MM-dd")</small>
+                                    <small><b>Vehicle:</b> @invoice.NombreVehicleTexto</small>
                                     <br>
-                                    <small><b>Rented Days:</b> @invoice.RentedDays</small>
-                                    <br>
-                                    <small><b>Total Amount:</b> $@invoice.TotalAmount.ToString("N2")</small>
-                                </details>
+                                    <details>
+                                        <small><b>Rental Date:</b> @invoice.RentalDate.ToString("yyyy-MM-dd")</small>
+                                        <br>
+                                        <small><b>Return Date:</b> @invoice.ReturnDate.ToString("yyyy-MM-dd")</small>
+                                        <br>
+                                        <small><b>Rented Days:</b> @invoice.RentedDays</small>
+                                        <br>
+                                        <small><b>Total Amount:</b> $@invoice.TotalAmount.ToString("N2")</small>
+                                    </details>
+                                </div>
+                            </div>
+                            <div class="card-footer text-end">
+                                <button class="btn btn-info">
+                                    <span class="oi oi-action-redo"></span>
+                                </button>
+                                <button @onclick="()=>Seleccionar(invoice.Id)"
+                                        class="btn btn-warning">
+                                    <span class="oi oi-pencil"></span>
+                                </button>
+                                <button @onclick="()=>Eliminar(invoice)"
+                                        class="btn btn-danger">
+                                    <span class="oi oi-trash"></span>
+                                </button>
                             </div>
                         </div>
-                        <div class="card-footer text-end">
-                            <button class="btn btn-info">
-                                <span class="oi oi-action-redo"></span>
-                            </button>
-                            <button @onclick="()=>Seleccionar(invoice.Id)"
-                                    class="btn btn-warning">
-                                <span class="oi oi-pencil"></span>
-                            </button>
-                            <button @onclick="()=>Eliminar(invoice)"
-                                    class="btn btn-danger">
-                                <span class="oi oi-trash"></span>
-                            </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center mt-5">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <h4 class="card-title">¡Ups! No hay vehículos rentados.</h4>
+                            <p class="card-text">Parece que no hay vehículos que coincidan con tus criterios.</p>
+                            <img src="logo1.jpeg" alt="No hay vehículos rantados" 
+                            class="rounded-circle img-fluid mt-3" style="max-width: 150px;">
+                            <!-- You can replace the image with an icon or any graphic you prefer -->
                         </div>
                     </div>
                 </div>

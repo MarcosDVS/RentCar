@@ -4,9 +4,23 @@
 
 <h1>Counter</h1>
 
+            
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+
+    <div class="col-12 text-center mt-5">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h4 class="card-title">¡Ups! No se encontraron vehículos.</h4>
+                <p class="card-text">Parece que no hay vehículos que coincidan con tus criterios.</p>
+                <img src="logo1.jpeg" alt="No se encontraron vehículos" 
+                class="rounded-circle img-fluid mt-3" style="max-width: 150px;">
+                <!-- You can replace the image with an icon or any graphic you prefer -->
+            </div>
+        </div>
+    </div>
 
 @code {
     private int currentCount = 0;

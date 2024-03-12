@@ -87,28 +87,45 @@
     </div>
 
     <div class="row d-flex justify-content-center">
-        @foreach (var item in Customers)
+        @if (Customers.Any())
         {
-            <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <span class="oi oi-person"></span>
-                            <b>@item.Name</b>
-                        </h5>
-                        <details>
-                            <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
-                            <br>
-                            <small class="card-text"><b>Email:</b> @item.Email</small>
-                        </details>
+            @foreach (var item in Customers)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span class="oi oi-person"></span>
+                                <b>@item.Name</b>
+                            </h5>
+                            <details>
+                                <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
+                                <br>
+                                <small class="card-text"><b>Email:</b> @item.Email</small>
+                            </details>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-warning" @onclick="()=>Editar(item)">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button class="btn btn-danger" @onclick="()=>Eliminar(item)">
+                                <span class="oi oi-trash"></span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <button class="btn btn-warning" @onclick="()=>Editar(item)">
-                            <span class="oi oi-pencil"></span>
-                        </button>
-                        <button class="btn btn-danger" @onclick="()=>Eliminar(item)">
-                            <span class="oi oi-trash"></span>
-                        </button>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center mt-5">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body">
+                        <h4 class="card-title">¡Ups! No se encontraron clientes.</h4>
+                        <p class="card-text">Parece que no hay clientes que coincidan con tus criterios.</p>
+                        <img src="logo1.jpeg" alt="No se encontraron vehículos" 
+                        class="rounded-circle img-fluid mt-3" style="max-width: 150px;">
+                        <!-- You can replace the image with an icon or any graphic you prefer -->
                     </div>
                 </div>
             </div>
