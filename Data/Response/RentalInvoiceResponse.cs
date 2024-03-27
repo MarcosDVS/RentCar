@@ -13,9 +13,10 @@ namespace RentCar.Data.Response
         public DateTime RentalDate { get; set; } = DateTime.Now;
         public DateTime ReturnDate { get; set; } = DateTime.Now.AddDays(+2);
         public decimal PriceDay { get; set; } = 1500;
-        public decimal TotalAmount { get; set; }
+        public decimal TotalAmount => (decimal)RentedDays * PriceDay;
 
         public int RentedDays => (int)(ReturnDate - RentalDate).TotalDays;
+        public decimal ITBIS => TotalAmount * 0.18m;
 
         public string NombreCustomerTexto => Customer != null ? Customer.Name : "N/A";
         public string NombreVehicleTexto => Vehicle != null ? Vehicle.Make +" " + Vehicle.Model +" " + Vehicle.Year : "N/A";
@@ -29,8 +30,7 @@ namespace RentCar.Data.Response
                 VehicleId = VehicleId,
                 RentalDate = RentalDate,
                 ReturnDate = ReturnDate,
-                PriceDay = PriceDay,
-                TotalAmount = TotalAmount
+                PriceDay = PriceDay
             };
         }
     }

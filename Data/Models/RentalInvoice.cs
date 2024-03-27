@@ -51,8 +51,7 @@ namespace RentCar.Data.Models
             Vehicle = Vehicle != null? Vehicle!.ToResponse() : null,
             RentalDate = RentalDate,
             ReturnDate = ReturnDate,
-            PriceDay = PriceDay,
-            TotalAmount = TotalAmount
+            PriceDay = PriceDay
         };
     }
 

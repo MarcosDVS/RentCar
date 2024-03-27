@@ -13,7 +13,10 @@ namespace RentCar.Data.Request
         [Required(ErrorMessage = "Seleccionar la fecha de devolución es obligatoria")]
         public DateTime ReturnDate { get; set; } = DateTime.Now.AddDays(+2);
         [Required(ErrorMessage = "Fijar un precio por día es obligatoria")]
-        public decimal PriceDay { get; set; } = 1500; 
-        public decimal TotalAmount { get; set; }
+        public decimal PriceDay { get; set; } = 1500;
+        public int RentedDays => (int)(ReturnDate - RentalDate).TotalDays;
+        public decimal TotalAmount => (decimal)RentedDays * PriceDay;
+        
+        public decimal ITBIS => TotalAmount * 0.18m;
     }
 }

@@ -303,13 +303,6 @@
         }
         DateTime startDate = request.RentalDate;
         DateTime endDate = request.ReturnDate;
-        int totalDays = (int)(endDate - startDate).TotalDays;
-        decimal totalAmount = totalDays * request.PriceDay;
-        
-        request.TotalAmount = totalAmount;
-
-        TotalPagar = request.TotalAmount;
-        RentedDays = totalDays;
 
         Message = null;
         Paid = true;

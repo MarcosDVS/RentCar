@@ -29,7 +29,7 @@
                 <button class="btn btn-outline-warning d-print-none" @onclick="UpdatePage">
                     <span class="oi oi-loop"></span>
                 </button>
-                <button @onclick="Cancelar" class="btn btn-outline-danger">
+                <button @onclick="Cancelar" class="btn btn-outline-danger d-print-none">
                     <span class="oi oi-arrow-thick-left"></span>
                 </button>
             </div>
@@ -42,32 +42,57 @@
 
             @*Selecciona el cliente*@
             <div class="mb-3 input-group">
-                <input class="form-control" placeholder="Cliente" aria-label="Cliente" 
-                aria-describedby="button-addon2" list="contactos" 
-                @bind="Nombre" 
-                @oninput="HandleCustomerSelection" required/>
-                <datalist id="contactos">
-                    @foreach (var cliente in Customers)
-                    {
-                        <option value="@cliente.Name" />
-                    }
-                </datalist>
+                @if(request.Id > 0)
+                {
+                    <select class="form-control" @bind="request.CustomerId">
+                        @foreach (var cliente in Customers)
+                        {
+                            <option value="@cliente.Id">@cliente.Name</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <input class="form-control" placeholder="Cliente" aria-label="Cliente" 
+                    aria-describedby="button-addon2" list="contactos" 
+                    @bind="Nombre" 
+                    @oninput="HandleCustomerSelection" required/>
+                    <datalist id="contactos">
+                        @foreach (var cliente in Customers)
+                        {
+                            <option value="@cliente.Name" />
+                        }
+                    </datalist>
+                }
             </div>
 
             @*Detalla los datos de la renta, precio x dia, vehiculo, y fecha de retorno*@
             <div class="card">
                 <div class="card-body">
                     <div class="mb-2 input-group">
-                        <input class="form-control" placeholder="Vehiculo" aria-label="Vehiculo" 
-                        aria-describedby="button-addon2" list="vehicles" 
-                        @bind="CarName" 
-                        @oninput="HandleVehicleSelection" required/>
-                        <datalist id="vehicles">
-                            @foreach (var vehiculo in Vehicles)
-                            {
-                                <option value="@($"{vehiculo.Make} {vehiculo.Model} {vehiculo.Year}")" />
-                            }
-                        </datalist>
+                        @if(request.Id > 0)
+                        {
+                            <select class="form-control" @bind="request.VehicleId">
+                                @foreach (var vehiculo in Vehicles)
+                                {
+                                    <option value="@vehiculo.Id">
+                                        @($"{vehiculo.Make} {vehiculo.Model} {vehiculo.Year}")
+                                    </option>
+                                }
+                            </select>
+                        }
+                        else{
+                            <input class="form-control" placeholder="Vehiculo" aria-label="Vehiculo" 
+                            aria-describedby="button-addon2" list="vehicles" 
+                            @bind="CarName" 
+                            @oninput="HandleVehicleSelection" required/>
+                            <datalist id="vehicles">
+                                @foreach (var vehiculo in Vehicles)
+                                {
+                                    <option value="@($"{vehiculo.Make} {vehiculo.Model} {vehiculo.Year}")" />
+                                }
+                            </datalist>
+                        }
                     </div>
 
                     <div class="mb-2 input-group">
@@ -126,16 +151,20 @@
 
                     <ul class="list-unstyled float-end me-0">
                         <li>
-                            <span class="me-3 float-start"><strong>Total Amount:</strong></span>
-                            <i class="fas fa-dollar-sign">$@TotalPagar.ToString("N2")</i>
+                            <span class="float-start" style="margin-right: 35px;"><strong>Días Rentados:</strong> </span>
+                            <i class="fas fa-dollar-sign">@request.RentedDays</i>
                         </li>
                         <li> 
-                            <span class="me-5"><strong>Discount:</strong></span>
-                            <i class="fas fa-dollar-sign">$0,00</i>
+                            <span class="me-3"><strong>Sub-Total:</strong></span>
+                            <i class="fas fa-dollar-sign">@($"{(request.TotalAmount - request.ITBIS):N2}")</i>
+                        </li>
+                        <li> 
+                            <span class="me-5"><strong>ITBIS:</strong></span>
+                            <i class="fas fa-dollar-sign">$@request.ITBIS.ToString("N2")</i>
                         </li>
                         <li>
-                            <span class="float-start" style="margin-right: 35px;"><strong>Rented Days </strong> </span>
-                            <i class="fas fa-dollar-sign">@RentedDays</i>
+                            <span class="me-3 float-start"><strong>Importe:</strong></span>
+                            <i class="fas fa-dollar-sign">$@request.TotalAmount.ToString("N2")</i>
                         </li>
                     </ul>
 
@@ -146,27 +175,6 @@
     }
     else
     {
-        @*<div class="modal" style="display: @(Details ? "block" : "none"); background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><b>Details</b></h5>
-                        <button type="button" class="close btn btn-outline-danger" data-dismiss="modal" aria-label="Close" @onclick="CloseDeatils">
-                            <span aria-hidden="true" class="oi oi-x"></span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 class="modal-title"><b>Body</b></h5>
-                        <p>Chuzma</p>
-                    </div>
-                    <div class="modal-footer">
-                        <h5 class="modal-title"><b>Footer</b></h5>
-                        <p>Chuzma</p>
-                    </div>
-
-                </div>
-            </div>
-        </div>*@
 
         <div class="row d-flex justify-content-center">
             @if (Invoices.Any())
@@ -241,7 +249,6 @@
     public string Filtro { get; set; } = "";
     public string Message { get; set; } = "";
     public decimal TotalPagar { get; set; } = 0;
-    public int RentedDays { get; set; } = 0;
 
     void CloseDeatils()
     {
@@ -267,9 +274,13 @@
     }
     void HandleCustomerSelection(ChangeEventArgs args)
     {
-        var selectedCustomer = args.Value.ToString();
-        BuscarSeleccionarCliente(selectedCustomer);
+        if (args.Value != null)
+        {
+            var selectedCustomer = args.Value.ToString();
+            BuscarSeleccionarCliente(selectedCustomer);
+        }
     }
+
     void BuscarSeleccionarCar(string Car)
     {
         var c = Vehicles.FirstOrDefault(p => $"{p.Make} {p.Model} {p.Year}" == Car);
@@ -299,13 +310,6 @@
         }
         DateTime startDate = request.RentalDate;
         DateTime endDate = request.ReturnDate;
-        int totalDays = (int)(endDate - startDate).TotalDays;
-        decimal totalAmount = totalDays * request.PriceDay;
-        
-        request.TotalAmount = totalAmount;
-
-        TotalPagar = request.TotalAmount;
-        RentedDays = totalDays;
 
         Message = null;
         Paid = true;
@@ -380,11 +384,8 @@
 
             DateTime startDate = request.RentalDate;
             DateTime endDate = request.ReturnDate;
-            int totalDays = (int)(endDate - startDate).TotalDays;
-            decimal totalAmount = totalDays * request.PriceDay;
 
-            TotalPagar = totalAmount;
-            RentedDays = totalDays;
+            HandleCustomerSelection(new ChangeEventArgs());
 
             Message = null;
         }
@@ -406,7 +407,6 @@
         // Limpiar los campos y reiniciar variables
         request = new RentalInvoiceRequest();
         TotalPagar = 0;
-        RentedDays = 0;
 
         Paid = false;
         Message = null;
