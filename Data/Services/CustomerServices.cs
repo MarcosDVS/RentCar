@@ -75,7 +75,7 @@ namespace RentCar.Data.Services
             {
                 var customer = await dbContext.Customers
                     .Where(c =>
-                        (c.Name + " " + c.PhoneNumber + " " + c.Email)
+                        (c.Cedula + " " + c.Name + " " + c.PhoneNumber + " " + c.Email)
                         .ToLower()
                         .Contains(filtro.ToLower()
                         )

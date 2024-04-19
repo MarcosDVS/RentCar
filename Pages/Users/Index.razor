@@ -39,42 +39,34 @@
                             </div>
                         }
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-person"></span>
-                                </span>
-                            </div>
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-person"></span>
+                            </span>
                             <input type="text" placeholder="Full Name" id="nombre" class="form-control" 
                             @bind="@request.Name" pattern=".{3,}" title="Full Name must be at least 3 characters" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-envelope-closed"></span>
-                                </span>
-                            </div>
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-envelope-closed"></span>
+                            </span>
                             <input type="email" placeholder="Email" id="email" class="form-control" 
                             @bind="@request.Username" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-code"></span>
-                                </span>
-                            </div>
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-code"></span>
+                            </span>
                             <input type="text" placeholder="Password" id="pasword" class="form-control" 
                             @bind="@request.Password" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-badge"></span>
-                                </span>
-                            </div>
-                            <select name="" id="" @bind="@request.Role" class="form-control" required title="Debes seleccionar un role">
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-badge"></span>
+                            </span>
+                            <select name="" id="" @bind="@request.Role" class="form-select" required title="Debes seleccionar un role">
                                 <option value="" disabled selected>Elige un role</option>
                                 <option value="admin">Administrador</option>
                                 <option value="user">Usuario</option>

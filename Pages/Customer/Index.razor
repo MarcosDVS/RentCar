@@ -4,15 +4,29 @@
 
 <div class="row">
     <div class="col-lg-3 col-sm-12 mt-2">
-        <div class="text-left mb-3">
+        <div class="text-left mb-3 d-print-none">
             <button class="btn btn-outline-success" @onclick="MostrarFormulario">
                 <span class="oi oi-plus"></span>
                 
+            </button>
+            <button class="btn btn-outline-primary" 
+                @onclick="async ()=>{await PrintPageAsync();}">
+                <span class="oi oi-print"></span>
             </button>
         </div>
     </div>
     <div class="col-lg-6 col-sm-12 mt-2 text-center">
         <h2 class="text-center"><strong>Listado de Clientes</strong></h2>
+    </div>
+    <div class="col">
+        <div class="input-group d-print-none">
+            <input type="text" class="form-control" 
+            placeholder="Buscar por nombre" @bind="Filtro">
+            <button class="btn btn-outline-info" 
+                type="button" @onclick="()=>CargarCustomers()">
+                <span class="oi oi-magnifying-glass text-black"></span>
+            </button>
+        </div>
     </div>
     <hr>
 </div>
@@ -34,24 +48,33 @@
                     <ValidationSummary />
 
                     <div class="modal-body">
+                        
+                        <div class="form-group input-group mb-3">
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-credit-card"></span>
+                            </span>
+                            <input type="text" placeholder="Cedula" id="nombre" class="form-control" 
+                                @bind="@request.Cedula" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)" 
+                                required 
+                                pattern="\d{11}" 
+                                title="Debe tener 11 dígitos"
+                            />
+                        </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-person"></span>
-                                </span>
-                            </div>
-                            <input type="text" placeholder="Full Name" id="nombre" class="form-control" 
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-person"></span>
+                            </span>
+                            <input type="text" placeholder="Nombre Completo" id="nombre" class="form-control" 
                             @bind="@request.Name" required />
                         </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-phone"></span>
-                                </span>
-                            </div>
-                            <input type="tel" placeholder="Phone Number" id="nombre" class="form-control" 
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-phone"></span>
+                            </span>
+                            <input type="tel" placeholder="Número telefonico" id="nombre" class="form-control" 
                                 @bind="@request.PhoneNumber" 
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" 
                                 required 
@@ -62,13 +85,11 @@
                         </div>
 
                         <div class="form-group input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white text-black border-0">
-                                    <span class="oi oi-envelope-closed"></span>
-                                </span>
-                            </div>
+                            <span class="input-group-text bg-white text-black">
+                                <span class="oi oi-envelope-closed"></span>
+                            </span>
                             <input type="email" placeholder="Email" id="email" class="form-control" 
-                            @bind="@request.Email" required />
+                            @bind="@request.Email" />
                         </div>
                     </div>
 
@@ -91,7 +112,7 @@
         {
             @foreach (var item in Customers)
             {
-                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center">
+                <div class="col-lg-4 col-md-6 col-sm-12 mt-2 text-center d-print-none">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">
@@ -99,6 +120,8 @@
                                 <b>@item.Name</b>
                             </h5>
                             <details>
+                                <small class="card-text"><b>Cedula:</b> @FormatCustomerId(item.Cedula)</small>
+                                <br>
                                 <small class="card-text"><b>Teléfono:</b> @FormatPhoneNumber(item.PhoneNumber)</small>
                                 <br>
                                 <small class="card-text"><b>Email:</b> @item.Email</small>
@@ -115,6 +138,30 @@
                     </div>
                 </div>
             }
+            <table class="table table-striped d-none d-print-block">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cedula</th>
+                        <th>Nombre completo</th>
+                        <th>Telefono</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Row in Customers)
+                    {
+                        <tr>
+                            <td>@Row.Id</td>
+                            <td>@FormatCustomerId(Row.Cedula)</td>
+                            <td>@Row.Name</td>
+                            <td>@FormatPhoneNumber(Row.PhoneNumber)</td>
+                            <td>@Row.Email</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
         }
         else
         {
@@ -141,7 +188,6 @@
     public bool ShowDetails { get; set; } = false;
     public string Filtro { get; set; } = "";
     public List<CustomerResponse> Customers { get; set; } = new List<CustomerResponse>();
-    public CustomerResponse SelectedCustomer { get; set; }
 
     public CustomerRequest request = new CustomerRequest();
 
@@ -159,7 +205,20 @@
             return phoneNumber;
         }
     }
-
+    private string FormatCustomerId(string customerId)
+    {
+        // Verifica si el número telefónico tiene la longitud esperada
+        if (customerId != null && customerId.Length == 11)
+        {
+            // Formatea el número telefónico
+            return $"{customerId.Substring(0, 3)}-{customerId.Substring(3, 7)}-{customerId.Substring(10)}";
+        }
+        else
+        {
+            // Devuelve el número telefónico sin cambios si no tiene la longitud esperada
+            return customerId!;
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await CargarCustomers();
@@ -170,7 +229,7 @@
         var resultado = await customerService.Consultar(Filtro);
         if (resultado.Success)
         {
-            Customers = resultado.Data;
+            Customers = resultado.Data!;
         }
         else
         {
@@ -237,22 +296,25 @@
     {
         ShowDetails = false;
     }
-    void MostrarDetalles(int customerId)
-    {
-        SelectedCustomer = Customers.FirstOrDefault(c => c.Id == customerId);
-        ShowDetails = true;
-    }
 
     void Editar(CustomerResponse customer)
     {
         request = new CustomerRequest
             {
                 Id = customer.Id,
+                Cedula = customer.Cedula,
                 Name = customer.Name,
                 PhoneNumber = customer.PhoneNumber,
                 Email = customer.Email
             };
         ShowForm = true;
     }
+
+    private async Task PrintPageAsync()
+    {
+        // Llama a la función JavaScript para imprimir la página
+        await JSRuntime.InvokeVoidAsync("printPage");
+    }
+
 }
  

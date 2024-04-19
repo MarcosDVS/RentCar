@@ -23,7 +23,6 @@ builder.Services.AddScoped<IRentCarDbContext, RentCarDbContext>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IVehicleServices, VehicleServices>();
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
-builder.Services.AddScoped<IEmployeeServices, EmployeeServices>(); 
 builder.Services.AddScoped<IRentalInvoiceServices, RentalInvoiceServices>();
 
 #region Authentication
